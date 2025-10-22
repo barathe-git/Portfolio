@@ -1,0 +1,114 @@
+{
+  "profile": {
+    "name": "Barath Elumalai",
+    "title": "Software Developer",
+    "location": "Chennai, TN",
+    "email": "barath.contact@gmail.com",
+    "phone": "9791165728",
+    "github": "https://github.com/barathe-git",
+    "linkedin": "https://www.linkedin.com/in/barath-e",
+    "summary": "Results-driven Software Developer with 4+ years of experience designing and building scalable, high-performance applications using Java, Spring Boot, NodeJS,and microservices architecture. Adept at developing RESTful APIs, integrating cloud platforms (AWS), and implementing event-driven systems with Kafka. Experienced in working with diverse databases including PostgreSQL, MongoDB, Redis, and Elasticsearch. Passionate about writing clean, efficient code and leveraging modern technologies to deliver impactful business solutions. Known for adaptability, problem-solving, and a strong drive to continuously learn and innovate."
+  },
+  "skills": {
+    "Languages": ["Java (8+)", "TypeScript", "JavaScript", "Python", "C/C++", "SQL"],
+    "Frameworks": ["Spring Boot", "Spring MVC", "Spring Data JPA", "Spring Security", "Spring Cloud", "Angular", "NestJS", "NodeJS", "TypeORM"],
+    "Databases": ["Redis", "MongoDB", "MySQL", "PostgreSQL", "Hibernate", "Elasticsearch", "Cassandra"],
+    "Cloud & Services": ["AWS Lambda", "S3", "SQS", "SNS", "SES", "IAM", "DynamoDB", "API Gateway", "Docker", "CI/CD"],
+    "Architecture": ["Microservices", "Cloud Based", "Security Best Practices", "System Monitoring"],
+    "Tools": ["Kafka", "Git", "Docker Compose", "Confluence", "Swagger"]
+  },
+  "projects": [
+    {
+      "name": "Cloud API Integration",
+      "description": "Automated Box-to-S3/DynamoDB migration using AWS Lambda, handling API limits with retries, Kafka pipelines, Redis caching, SES notifications.",
+      "techStack": "Java, NestJS, DynamoDB, AWS, CI/CD, BoxDev",
+      "highlights": [
+        "Developed AWS Lambda functions to automate Box-to-S3/DynamoDB content migration, reducing manual intervention by 50% and preserving historical file versions",
+        "Addressed API pagination and rate limits; implemented exponential backoff and retry jitter for error-resilient data transfer",
+        "Designed event-driven microservices and pipelines using Kafka, integrating Redis for caching and session control",
+        "Implemented email (SES) and push notification modules for batch updates and operational alerts",
+        "Optimized code for scalability and applied reactive patterns with Spring WebFlux / Project Reactor where appropriate"
+      ],
+      "liveDemoUrl": "https://developer.box.com"
+    },
+    {
+      "name": "Automotive Retail SaaS Platform",
+      "description": "Developed a bulk inventory syndication system with audit logging, marketing pages, and PDF generation. Built wrapper APIs for vehicle data management and access control, documented processes in Confluence, and delivered under agile methodology using MongoDB and Elasticsearch for scalable, high-speed data handling.",
+      "techStack": "Java, Spring Boot, MongoDB, Elasticsearch, Confluence, Redis, Jenkins",
+      "highlights": [
+        "Implemented bulk inventory syndication, audit logging, marketing pages, and PDF generation",
+        "Built wrapper APIs to update bulk vehicle data and manage path permissions",
+        "Documented assigned tickets and technical details in Confluence for efficient tracking",
+        "Utilized MongoDB for JSON document storage and Elasticsearch for fast search"
+      ],
+      "liveDemoUrl": "https://tekion.com/request-demo"
+    },
+    {
+      "name": "E-Learning Platform",
+      "description": "Integrated ChatGPT for dynamic lesson and quiz generation",
+      "techStack": "Java, Vert.x, Kafka, Elasticsearch, PostgreSQL",
+      "highlights": [
+        "Integrated ChatGPT (Davinci-2) for dynamic lesson and quiz generation",
+        "Implemented Elasticsearch-backed search API (~30% faster)",
+        "Enabled multi-tenant support with real-time learner progress syncing via Kafka"
+      ],
+      "liveDemoUrl": "https://demo.gooru.org/login"
+    },
+    {
+      "name": "Workforce Management App",
+      "description": "Full timesheet module and microservices refactoring",
+      "techStack": "NodeJS, Redis, PostgreSQL",
+      "highlights": [
+        "Built JWT authentication with Redis-based session control",
+        "Developed full Timesheet module (creation, submission, approvals, reporting)",
+        "Refactored backend services into microservices",
+        "Integrated secure email sending using Google APIs"
+      ],
+      "liveDemoUrl": "https://hris.cloudripples.io"
+    },
+    {
+      "name": "Business Auditing Tool",
+      "description": "Built a high-performance Java auditing tool with 2FA, LDAP/Active Directory integration, responsive UIs, and PostgreSQL/MySQL backend for efficient mailbox and traffic reporting.",
+      "techStack": "Java, Spring Boot, MongoDB, Elasticsearch, MySQL, JNDI, Active Directory",
+      "highlights": [
+        "Implemented two-factor authentication and LDAP-based audit reporting (mailbox usage, traffic)",
+        "Developed Java apps capable of high-volume processing with low latency",
+        "Built responsive UIs and utilized JNI to connect with Active Directory for user data retrieval",
+        "Employed PostgreSQL/MySQL for structured data storage optimized for performance"
+      ],
+      "liveDemoUrl": "https://www.zoho.com/creator/industries/custom-erp-software.html"
+    }
+  ],
+  "experiences": [
+    {
+      "company": "Cloud Ripples Private Limited",
+      "duration": "11/2022 - Present",
+      "role": "Software Developer"
+    },
+    {
+      "company": "Zoho Corporation Private Limited",
+      "duration": "06/2021 - 09/2022",
+      "role": "Member Technical Staff"
+    }
+  ],
+  "education": [
+    {
+      "institute": "RMK Engineering College",
+      "duration": "08/2017 - 03/2021",
+      "degree": "Bachelor of Engineering, Electrical & Electronics",
+      "cgpa": "8.42"
+    },
+    {
+      "institute": "Velammal Matric Higher Secondary School",
+      "duration": "07/2016 - 03/2017",
+      "percentage": "83.83%",
+      "board": "State Board of School Examinations, TN"
+    },
+    {
+      "institute": "Velammal Vidhyashram",
+      "duration": "07/2014 - 03/2015",
+      "cgpa": "8.8",
+      "board": "Central Board of Secondary Education"
+    }
+  ]
+}

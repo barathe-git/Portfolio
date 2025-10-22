@@ -1,0 +1,18 @@
+###########################################################
+# application-local.properties.example
+#
+# Copy this file to application-local.properties (same dir)
+# and fill in real values. The real file is git-ignored.
+# Spring Boot will automatically pick it up if you run with
+# `--spring.profiles.active=local` or set SPRING_PROFILES_ACTIVE=local
+###########################################################
+
+# JWT configuration (REQUIRED)
+jwt.secret=REPLACE_WITH_A_SECURE_RANDOM_64_CHAR_HEX
+jwt.expiration=86400000
+
+# Example database overrides (optional)
+# spring.datasource.url=jdbc:postgresql://localhost:5432/portfolio_db
+# spring.datasource.username=postgres
+# spring.datasource.password=postgres
+
