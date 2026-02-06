@@ -3,7 +3,6 @@ package com.bgv.portfolio.model;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
 import java.util.Set;
 
 @Entity

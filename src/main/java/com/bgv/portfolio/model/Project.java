@@ -22,6 +22,7 @@ public class Project extends AuditFields {
     private String description;
 
     private String name;
+    private Integer companyId;
     private String githubUrl;
     private String techStack;
     private List<String> highlight;

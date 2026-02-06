@@ -7,7 +7,7 @@
     "phone": "9791165728",
     "github": "https://github.com/barathe-git",
     "linkedin": "https://www.linkedin.com/in/barath-e",
-    "summary": "Results-driven Software Developer with 4+ years of experience designing and building scalable, high-performance applications using Java, Spring Boot, NodeJS,and microservices architecture. Adept at developing RESTful APIs, integrating cloud platforms (AWS), and implementing event-driven systems with Kafka. Experienced in working with diverse databases including PostgreSQL, MongoDB, Redis, and Elasticsearch. Passionate about writing clean, efficient code and leveraging modern technologies to deliver impactful business solutions. Known for adaptability, problem-solving, and a strong drive to continuously learn and innovate."
+    "summary": "Results-driven Software Engineer with 4.5+ years of experience building scalable, high-performance systems using Java, Spring Boot, and microservice architecture. Skilled in API development, cloud integration (AWS), and event-driven solutions with Kafka, along with hands-on expertise in PostgreSQL, MongoDB, Redis, and Elasticsearch. I have worked on projects involving client requirement analysis, solution delivery, and business process support, which strengthened my domain knowledge, problem-solving, collaboration, and communication skills. Always eager to learn new technologies and contribute effectively to organizational success."
   },
   "skills": {
     "Languages": ["Java (8+)", "TypeScript", "JavaScript", "Python", "C/C++", "SQL"],
@@ -19,8 +19,23 @@
   },
   "projects": [
     {
+      "name": "Glasscase BGV Platform",
+      "companyId": 3,
+      "description": "Automated document validation, improved backend stability, and delivered audit-ready systems in an Agile environment",
+      "techStack": "Python, Groovy, Java, Grails, MySQL, PostgreSQL",
+      "highlights": [
+        "Built an automated document insufficiency validation module with OCR-based checks, real-time error detection, and user-friendly remediation UI, reducing manual review efforts",
+        "Improved production stability through robust exception handling, rollback mechanisms, and optimized DB connection pooling",
+        "Created ISO-compliant SDLC documentation, including schemas, workflows, and API specs for audit readiness",
+        "Prepared a detailed migration plan from Groovy/Grails to Python, covering architecture analysis, risks, and phased strategy",
+        "Collaborated in Agile teams and delivered high-quality backend features"
+      ],
+      "liveDemoUrl": "https://demo.meta-path.ai/home/login"
+    },
+    {
       "name": "Cloud API Integration",
-      "description": "Automated Box-to-S3/DynamoDB migration using AWS Lambda, handling API limits with retries, Kafka pipelines, Redis caching, SES notifications.",
+      "companyId": 2,
+      "description": "Automated Box-to-S3/DynamoDB migration using AWS Lambda, handling API limits with retries, Kafka pipelines, Redis caching, SES notifications",
       "techStack": "Java, NestJS, DynamoDB, AWS, CI/CD, BoxDev",
       "highlights": [
         "Developed AWS Lambda functions to automate Box-to-S3/DynamoDB content migration, reducing manual intervention by 50% and preserving historical file versions",
@@ -33,7 +48,8 @@
     },
     {
       "name": "Automotive Retail SaaS Platform",
-      "description": "Developed a bulk inventory syndication system with audit logging, marketing pages, and PDF generation. Built wrapper APIs for vehicle data management and access control, documented processes in Confluence, and delivered under agile methodology using MongoDB and Elasticsearch for scalable, high-speed data handling.",
+      "companyId": 2,
+      "description": "Developed a bulk inventory syndication system with audit logging, marketing pages, and PDF generation. Built wrapper APIs for vehicle data management and access control, documented processes in Confluence, and delivered under agile methodology using MongoDB and Elasticsearch for scalable, high-speed data handling",
       "techStack": "Java, Spring Boot, MongoDB, Elasticsearch, Confluence, Redis, Jenkins",
       "highlights": [
         "Implemented bulk inventory syndication, audit logging, marketing pages, and PDF generation",
@@ -45,6 +61,7 @@
     },
     {
       "name": "E-Learning Platform",
+      "companyId": 2,
       "description": "Integrated ChatGPT for dynamic lesson and quiz generation",
       "techStack": "Java, Vert.x, Kafka, Elasticsearch, PostgreSQL",
       "highlights": [
@@ -56,6 +73,7 @@
     },
     {
       "name": "Workforce Management App",
+      "companyId": 2,
       "description": "Full timesheet module and microservices refactoring",
       "techStack": "NodeJS, Redis, PostgreSQL",
       "highlights": [
@@ -68,7 +86,8 @@
     },
     {
       "name": "Business Auditing Tool",
-      "description": "Built a high-performance Java auditing tool with 2FA, LDAP/Active Directory integration, responsive UIs, and PostgreSQL/MySQL backend for efficient mailbox and traffic reporting.",
+      "companyId": 1,
+      "description": "Built a high-performance Java auditing tool with 2FA, LDAP/Active Directory integration, responsive UIs, and PostgreSQL/MySQL backend for efficient mailbox and traffic reporting",
       "techStack": "Java, Spring Boot, MongoDB, Elasticsearch, MySQL, JNDI, Active Directory",
       "highlights": [
         "Implemented two-factor authentication and LDAP-based audit reporting (mailbox usage, traffic)",
@@ -81,11 +100,25 @@
   ],
   "experiences": [
     {
+      "id": 4,
+      "company": "PickYourTrail",
+      "duration": "02/2026 - Present",
+      "role": "Software Development Engineer 2"
+    },
+    {
+      "id": 3,
+      "company": "Pyramidions Metapath Solutions",
+      "duration": "10/2025 - 12/2025",
+      "role": "Deputy Manager"
+    },
+    {
+      "id": 2,
       "company": "Cloud Ripples Private Limited",
-      "duration": "11/2022 - Present",
+      "duration": "11/2022 - 10/2025",
       "role": "Software Developer"
     },
     {
+      "id": 1,
       "company": "Zoho Corporation Private Limited",
       "duration": "06/2021 - 09/2022",
       "role": "Member Technical Staff"

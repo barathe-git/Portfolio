@@ -68,6 +68,7 @@ public class PortfolioService {
 
     // ---------------- Admin ----------------
 
+    @SuppressWarnings("null")
     public ProjectDTO addProject(ProjectDTO dto) {
         log.info("Creating new project: {}", dto.getName());
         Project project = Project.builder()
@@ -79,12 +80,15 @@ public class PortfolioService {
                 .liveDemoUrl(dto.getLiveDemoUrl())
                 .build();
         Project saved = projectRepository.save(project);
-        log.info("Project created successfully with id: {}", saved.getId());
-        return mapToDTO(saved);
+        log.info("Project created successfully with id: {}", saved != null ? saved.getId() : null);
+        return saved != null ? mapToDTO(saved) : null;
     }
 
     public ProfileDTO updateProfile(Long id, ProfileDTO dto) {
         log.info("Updating profile with id: {}", id);
+        if (id == null) {
+            throw new IllegalArgumentException("Profile id cannot be null");
+        }
         Profile profile = profileRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Profile not found with id: " + id));
         profile.setName(dto.getName());
@@ -102,7 +106,7 @@ public class PortfolioService {
 
     public void deleteSkill(Long id) {
         log.info("Deleting skill with id: {}", id);
-        if(!skillRepository.existsById(id)) {
+        if (id == null || !skillRepository.existsById(id)) {
             throw new ResourceNotFoundException("Skill not found with id: " + id);
         }
         skillRepository.deleteById(id);

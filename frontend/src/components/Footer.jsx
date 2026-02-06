@@ -73,7 +73,7 @@ const Footer = ({ profile, experiences, education, skills, projects }) => {
             <h3 className="text-xl font-bold mb-4">Follow Me</h3>
             <div className="flex gap-4">
               <a
-                href="https://github.com"
+                href="https://github.com/barathe-git"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all duration-300 hover:scale-110"
@@ -81,7 +81,7 @@ const Footer = ({ profile, experiences, education, skills, projects }) => {
                 <Github size={20} />
               </a>
               <a
-                href="https://linkedin.com"
+                href="https://www.linkedin.com/in/barath-e"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all duration-300 hover:scale-110"
@@ -89,7 +89,7 @@ const Footer = ({ profile, experiences, education, skills, projects }) => {
                 <Linkedin size={20} />
               </a>
               <a
-                href="mailto:example@email.com"
+                href="mailto:barath.contact@gmail.com"
                 className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all duration-300 hover:scale-110"
               >
                 <Mail size={20} />

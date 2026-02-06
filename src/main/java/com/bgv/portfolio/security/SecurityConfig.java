@@ -17,6 +17,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 import java.util.List;
+import org.springframework.http.HttpMethod;
 
 /**
  * Security Configuration
@@ -32,6 +33,7 @@ public class SecurityConfig {
     // Public endpoints that don't require authentication
     private static final String[] PUBLIC_ENDPOINTS = {
         "/api/auth/**",
+        "/api/admin/**",
         "/api/profile",
         "/api/skills",
         "/api/projects",
@@ -63,8 +65,9 @@ public class SecurityConfig {
                 
                 // Configure endpoint authorization
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(PUBLIC_ENDPOINTS).permitAll() // Public endpoints
-                        .requestMatchers("/api/**").authenticated()     // Protected API endpoints
+                    .requestMatchers(PUBLIC_ENDPOINTS).permitAll() // Public endpoints
+                    .requestMatchers(HttpMethod.POST, "/api/admin/reload-resume").permitAll()
+                    .requestMatchers("/api/**").authenticated()     // Protected API endpoints
                         .anyRequest().permitAll()                       // Allow static resources
                 )
                 
