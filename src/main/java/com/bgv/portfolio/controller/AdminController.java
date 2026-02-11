@@ -1,6 +1,7 @@
 package com.bgv.portfolio.controller;
 
 import com.bgv.portfolio.bootstrap.ResumeDataService;
+import com.bgv.portfolio.dto.ApiResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,12 +18,12 @@ public class AdminController {
     }
 
     @PostMapping("/reload-resume")
-    public ResponseEntity<String> reloadResume() {
+    public ResponseEntity<ApiResponse<Void>> reloadResume() {
         try {
             resumeDataService.forceImportFromClasspath();
-            return ResponseEntity.ok("Resume data reloaded");
+            return ResponseEntity.ok(ApiResponse.success("Resume data reloaded successfully"));
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("Failed to reload resume: " + e.getMessage());
+            return ResponseEntity.status(500).body(ApiResponse.error("Failed to reload resume: " + e.getMessage(), "/api/admin/reload-resume"));
         }
     }
 }

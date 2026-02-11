@@ -27,10 +27,12 @@ function ProjectsEditor() {
         headers: { 'Authorization': `Bearer ${authContext.token}` }
       });
       if (response.ok) {
-        const data = await response.json();
+        const result = await response.json();
+        const data = result.status === 'success' ? result.data : result;
         setProjects(data);
       } else {
-        setError('Failed to load projects');
+        const result = await response.json();
+        setError(result.message || 'Failed to load projects');
       }
     } catch (err) {
       console.error('Error fetching projects:', err);
@@ -52,14 +54,14 @@ function ProjectsEditor() {
         },
         body: JSON.stringify(formData),
       });
-      if (response.ok) {
-        const newProject = await response.json();
-        setProjects([...projects, newProject]);
-        setSuccess('Project added successfully!');
+      const result = await response.json();
+      if (response.ok && result.status === 'success') {
+        setProjects([...projects, result.data]);
+        setSuccess(result.message || 'Project added successfully!');
         setShowForm(false);
         setTimeout(() => setSuccess(null), 3000);
       } else {
-        setError('Failed to add project');
+        setError(result.message || 'Failed to add project');
       }
     } catch (err) {
       console.error('Error adding project:', err);
@@ -84,15 +86,15 @@ function ProjectsEditor() {
           body: JSON.stringify(formData),
         }
       );
-      if (response.ok) {
-        const updatedProject = await response.json();
-        setProjects(projects.map(p => p.id === editingId ? updatedProject : p));
-        setSuccess('Project updated successfully!');
+      const result = await response.json();
+      if (response.ok && result.status === 'success') {
+        setProjects(projects.map(p => p.id === editingId ? result.data : p));
+        setSuccess(result.message || 'Project updated successfully!');
         setEditingId(null);
         setEditingProject(null);
         setTimeout(() => setSuccess(null), 3000);
       } else {
-        setError('Failed to update project');
+        setError(result.message || 'Failed to update project');
       }
     } catch (err) {
       console.error('Error updating project:', err);
@@ -115,11 +117,13 @@ function ProjectsEditor() {
         }
       );
       if (response.ok) {
+        const result = await response.json();
         setProjects(projects.filter(p => p.id !== id));
-        setSuccess('Project deleted successfully!');
+        setSuccess(result.message || 'Project deleted successfully!');
         setTimeout(() => setSuccess(null), 3000);
       } else {
-        setError('Failed to delete project');
+        const result = await response.json();
+        setError(result.message || 'Failed to delete project');
       }
     } catch (err) {
       console.error('Error deleting project:', err);

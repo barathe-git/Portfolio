@@ -25,10 +25,13 @@ function ProfileEditor() {
         headers: { 'Authorization': `Bearer ${authContext.token}` }
       });
       if (response.ok) {
-        const data = await response.json();
+        const result = await response.json();
+        // Handle ApiResponse wrapper
+        const data = result.status === 'success' ? result.data : result;
         setProfile(data);
       } else {
-        setError('Failed to load profile');
+        const result = await response.json();
+        setError(result.message || 'Failed to load profile');
       }
     } catch (err) {
       console.error('Error fetching profile:', err);
@@ -53,14 +56,14 @@ function ProfileEditor() {
           body: JSON.stringify(formData),
         }
       );
-      if (response.ok) {
-        const updatedProfile = await response.json();
-        setProfile(updatedProfile);
-        setSuccess('Profile updated successfully!');
+      const result = await response.json();
+      if (response.ok && result.status === 'success') {
+        setProfile(result.data);
+        setSuccess(result.message || 'Profile updated successfully!');
         setIsEditing(false);
         setTimeout(() => setSuccess(null), 3000);
       } else {
-        setError('Failed to update profile');
+        setError(result.message || 'Failed to update profile');
       }
     } catch (err) {
       console.error('Error updating profile:', err);

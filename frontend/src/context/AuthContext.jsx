@@ -55,21 +55,27 @@ export function AuthProvider({ children }) {
         body: JSON.stringify({ username, password }),
       });
 
-      if (!response.ok) {
-        throw new Error('Login failed');
+      const result = await response.json();
+
+      if (!response.ok || result.status === 'error') {
+        throw new Error(result.message || 'Login failed');
       }
 
-      const data = await response.json();
+      // Extract data from ApiResponse wrapper
+      const data = result.data || result;
+      
       setToken(data.token);
       setUser({
-        id: data.id,
+        id: data.userId,
         username: data.username,
+        email: data.email,
+        phoneNumber: data.phoneNumber,
         role: data.role,
       });
-      return true;
+      return { success: true, message: result.message };
     } catch (error) {
       console.error('Login error:', error);
-      return false;
+      return { success: false, message: error.message || 'Login failed' };
     } finally {
       setLoading(false);
     }

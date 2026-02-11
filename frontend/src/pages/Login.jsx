@@ -32,11 +32,11 @@ function Login() {
     setError(null);
 
     try {
-      const success = await authContext.login(formData.username, formData.password);
-      if (success) {
+      const result = await authContext.login(formData.username, formData.password);
+      if (result.success) {
         navigate('/admin');
       } else {
-        setError('Invalid username or password');
+        setError(result.message || 'Invalid username or password');
       }
     } catch (err) {
       setError(err.message || 'Login failed. Please try again.');

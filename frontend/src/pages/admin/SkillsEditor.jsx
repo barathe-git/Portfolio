@@ -27,10 +27,12 @@ function SkillsEditor() {
         headers: { 'Authorization': `Bearer ${authContext.token}` }
       });
       if (response.ok) {
-        const data = await response.json();
+        const result = await response.json();
+        const data = result.status === 'success' ? result.data : result;
         setSkills(data);
       } else {
-        setError('Failed to load skills');
+        const result = await response.json();
+        setError(result.message || 'Failed to load skills');
       }
     } catch (err) {
       console.error('Error fetching skills:', err);
@@ -52,14 +54,14 @@ function SkillsEditor() {
         },
         body: JSON.stringify(formData),
       });
-      if (response.ok) {
-        const newSkill = await response.json();
-        setSkills([...skills, newSkill]);
-        setSuccess('Skill added successfully!');
+      const result = await response.json();
+      if (response.ok && result.status === 'success') {
+        setSkills([...skills, result.data]);
+        setSuccess(result.message || 'Skill added successfully!');
         setShowForm(false);
         setTimeout(() => setSuccess(null), 3000);
       } else {
-        setError('Failed to add skill');
+        setError(result.message || 'Failed to add skill');
       }
     } catch (err) {
       console.error('Error adding skill:', err);
@@ -84,15 +86,15 @@ function SkillsEditor() {
           body: JSON.stringify(formData),
         }
       );
-      if (response.ok) {
-        const updatedSkill = await response.json();
-        setSkills(skills.map(s => s.id === editingId ? updatedSkill : s));
-        setSuccess('Skill updated successfully!');
+      const result = await response.json();
+      if (response.ok && result.status === 'success') {
+        setSkills(skills.map(s => s.id === editingId ? result.data : s));
+        setSuccess(result.message || 'Skill updated successfully!');
         setEditingId(null);
         setEditingSkill(null);
         setTimeout(() => setSuccess(null), 3000);
       } else {
-        setError('Failed to update skill');
+        setError(result.message || 'Failed to update skill');
       }
     } catch (err) {
       console.error('Error updating skill:', err);
@@ -115,11 +117,13 @@ function SkillsEditor() {
         }
       );
       if (response.ok) {
+        const result = await response.json();
         setSkills(skills.filter(s => s.id !== id));
-        setSuccess('Skill deleted successfully!');
+        setSuccess(result.message || 'Skill deleted successfully!');
         setTimeout(() => setSuccess(null), 3000);
       } else {
-        setError('Failed to delete skill');
+        const result = await response.json();
+        setError(result.message || 'Failed to delete skill');
       }
     } catch (err) {
       console.error('Error deleting skill:', err);

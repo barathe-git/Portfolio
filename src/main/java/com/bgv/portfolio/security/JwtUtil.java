@@ -71,6 +71,8 @@ public class JwtUtil {
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", user.getId());
         claims.put("username", user.getUsername());
+        claims.put("email", user.getEmail());
+        claims.put("phoneNumber", user.getPhoneNumber());
         claims.put("role", user.getRole());
         
         return Jwts.builder()
@@ -171,14 +173,36 @@ public class JwtUtil {
      * Extracts all user details from a JWT token.
      *
      * @param token the JWT token
-     * @return Map containing user details (userId, username, role)
+     * @return Map containing user details (userId, username, email, phoneNumber, role)
      */
     public Map<String, Object> extractUserDetails(String token) {
         Claims claims = getClaims(token);
         Map<String, Object> userDetails = new HashMap<>();
         userDetails.put("userId", claims.get("userId"));
         userDetails.put("username", claims.getSubject());
+        userDetails.put("email", claims.get("email"));
+        userDetails.put("phoneNumber", claims.get("phoneNumber"));
         userDetails.put("role", claims.get("role"));
         return userDetails;
+    }
+
+    /**
+     * Extracts the email from a JWT token.
+     *
+     * @param token the JWT token
+     * @return the email stored in the token
+     */
+    public String extractEmail(String token) {
+        return (String) getClaims(token).get("email");
+    }
+
+    /**
+     * Extracts the phone number from a JWT token.
+     *
+     * @param token the JWT token
+     * @return the phone number stored in the token
+     */
+    public String extractPhoneNumber(String token) {
+        return (String) getClaims(token).get("phoneNumber");
     }
 }

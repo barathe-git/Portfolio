@@ -27,10 +27,12 @@ function EducationEditor() {
         headers: { 'Authorization': `Bearer ${authContext.token}` }
       });
       if (response.ok) {
-        const data = await response.json();
+        const result = await response.json();
+        const data = result.status === 'success' ? result.data : result;
         setEducations(data);
       } else {
-        setError('Failed to load educations');
+        const result = await response.json();
+        setError(result.message || 'Failed to load educations');
       }
     } catch (err) {
       console.error('Error fetching educations:', err);
@@ -52,14 +54,14 @@ function EducationEditor() {
         },
         body: JSON.stringify(formData),
       });
-      if (response.ok) {
-        const newEducation = await response.json();
-        setEducations([...educations, newEducation]);
-        setSuccess('Education record added successfully!');
+      const result = await response.json();
+      if (response.ok && result.status === 'success') {
+        setEducations([...educations, result.data]);
+        setSuccess(result.message || 'Education record added successfully!');
         setShowForm(false);
         setTimeout(() => setSuccess(null), 3000);
       } else {
-        setError('Failed to add education');
+        setError(result.message || 'Failed to add education');
       }
     } catch (err) {
       console.error('Error adding education:', err);
@@ -84,15 +86,15 @@ function EducationEditor() {
           body: JSON.stringify(formData),
         }
       );
-      if (response.ok) {
-        const updatedEducation = await response.json();
-        setEducations(educations.map(e => e.id === editingId ? updatedEducation : e));
-        setSuccess('Education record updated successfully!');
+      const result = await response.json();
+      if (response.ok && result.status === 'success') {
+        setEducations(educations.map(e => e.id === editingId ? result.data : e));
+        setSuccess(result.message || 'Education record updated successfully!');
         setEditingId(null);
         setEditingEducation(null);
         setTimeout(() => setSuccess(null), 3000);
       } else {
-        setError('Failed to update education');
+        setError(result.message || 'Failed to update education');
       }
     } catch (err) {
       console.error('Error updating education:', err);
@@ -115,11 +117,13 @@ function EducationEditor() {
         }
       );
       if (response.ok) {
+        const result = await response.json();
         setEducations(educations.filter(e => e.id !== id));
-        setSuccess('Education record deleted successfully!');
+        setSuccess(result.message || 'Education record deleted successfully!');
         setTimeout(() => setSuccess(null), 3000);
       } else {
-        setError('Failed to delete education');
+        const result = await response.json();
+        setError(result.message || 'Failed to delete education');
       }
     } catch (err) {
       console.error('Error deleting education:', err);

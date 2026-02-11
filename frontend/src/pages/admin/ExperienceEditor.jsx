@@ -28,7 +28,8 @@ function ExperienceEditor() {
         headers: { 'Authorization': `Bearer ${authContext.token}` }
       });
       if (response.ok) {
-        const data = await response.json();
+        const result = await response.json();
+        const data = result.status === 'success' ? result.data : result;
         setProjects(data);
       }
     } catch (err) {
@@ -43,10 +44,12 @@ function ExperienceEditor() {
         headers: { 'Authorization': `Bearer ${authContext.token}` }
       });
       if (response.ok) {
-        const data = await response.json();
+        const result = await response.json();
+        const data = result.status === 'success' ? result.data : result;
         setExperiences(data);
       } else {
-        setError('Failed to load experiences');
+        const result = await response.json();
+        setError(result.message || 'Failed to load experiences');
       }
     } catch (err) {
       console.error('Error fetching experiences:', err);
@@ -68,14 +71,14 @@ function ExperienceEditor() {
         },
         body: JSON.stringify(formData),
       });
-      if (response.ok) {
-        const newExperience = await response.json();
-        setExperiences([...experiences, newExperience]);
-        setSuccess('Experience added successfully!');
+      const result = await response.json();
+      if (response.ok && result.status === 'success') {
+        setExperiences([...experiences, result.data]);
+        setSuccess(result.message || 'Experience added successfully!');
         setShowForm(false);
         setTimeout(() => setSuccess(null), 3000);
       } else {
-        setError('Failed to add experience');
+        setError(result.message || 'Failed to add experience');
       }
     } catch (err) {
       console.error('Error adding experience:', err);
@@ -100,15 +103,15 @@ function ExperienceEditor() {
           body: JSON.stringify(formData),
         }
       );
-      if (response.ok) {
-        const updatedExperience = await response.json();
-        setExperiences(experiences.map(e => e.id === editingId ? updatedExperience : e));
-        setSuccess('Experience updated successfully!');
+      const result = await response.json();
+      if (response.ok && result.status === 'success') {
+        setExperiences(experiences.map(e => e.id === editingId ? result.data : e));
+        setSuccess(result.message || 'Experience updated successfully!');
         setEditingId(null);
         setEditingExperience(null);
         setTimeout(() => setSuccess(null), 3000);
       } else {
-        setError('Failed to update experience');
+        setError(result.message || 'Failed to update experience');
       }
     } catch (err) {
       console.error('Error updating experience:', err);
@@ -131,11 +134,13 @@ function ExperienceEditor() {
         }
       );
       if (response.ok) {
+        const result = await response.json();
         setExperiences(experiences.filter(e => e.id !== id));
-        setSuccess('Experience deleted successfully!');
+        setSuccess(result.message || 'Experience deleted successfully!');
         setTimeout(() => setSuccess(null), 3000);
       } else {
-        setError('Failed to delete experience');
+        const result = await response.json();
+        setError(result.message || 'Failed to delete experience');
       }
     } catch (err) {
       console.error('Error deleting experience:', err);
