@@ -5,7 +5,7 @@ import AOS from 'aos';
 /**
  * Experience Component - Professional timeline with modern design
  */
-const Experience = ({ experiences }) => {
+const Experience = React.memo(({ experiences }) => {
   useEffect(() => {
     AOS.init({ duration: 1000 });
   }, []);
@@ -50,12 +50,9 @@ const Experience = ({ experiences }) => {
                         <Briefcase className="text-white" size={24} />
                       </div>
                       <div>
-                        <h3 className="text-xl font-bold text-slate-900 dark:text-white">
-                          {exp.role}
+                        <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-3">
+                          {exp.role} <span className="text-slate-400 dark:text-slate-500">|</span> <span className="text-blue-600 dark:text-blue-400">{exp.company}</span>
                         </h3>
-                        <p className="text-lg text-blue-600 dark:text-blue-400 font-medium">
-                          {exp.company}
-                        </p>
                         {exp.location && (
                           <p className="text-sm text-slate-600 dark:text-slate-400 flex items-center gap-1 mt-1">
                             <MapPin size={14} />
@@ -65,7 +62,7 @@ const Experience = ({ experiences }) => {
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-full text-sm font-medium">
+                    <div className="flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-full text-sm font-medium mt-2">
                       <Calendar size={16} />
                       {exp.duration}
                     </div>
@@ -111,6 +108,8 @@ const Experience = ({ experiences }) => {
       </div>
     </section>
   );
-};
+});
+
+Experience.displayName = 'Experience';
 
 export default Experience;

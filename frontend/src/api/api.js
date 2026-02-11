@@ -18,8 +18,8 @@ const api = axios.create({
  */
 api.interceptors.request.use(
   (config) => {
-    // Add JWT token if available
-    const token = localStorage.getItem('authToken');
+    // Add JWT token if available  
+    const token = localStorage.getItem('auth_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }

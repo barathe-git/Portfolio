@@ -1,50 +1,73 @@
 package com.bgv.portfolio.service;
 
 import com.bgv.portfolio.model.AdminUser;
-import com.bgv.portfolio.repository.AdminUserRepository;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 /**
  * Service for loading admin user details for Spring Security authentication.
- * Implements UserDetailsService to integrate with Spring Security's authentication mechanism.
+ * Uses hardcoded credentials instead of database lookup.
  */
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class AdminUserService implements UserDetailsService {
 
-    private final AdminUserRepository repository;
+    private static final String ADMIN_USERNAME = "admin";
+    private static final String ADMIN_PASSWORD = "admin";
+    private static final String ADMIN_ROLE = "ADMIN";
+    
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     /**
      * Loads user details by username for authentication.
-     * This method is called by Spring Security during authentication process.
+     * Supports only the hardcoded admin user.
      *
      * @param username the username of the admin to load
      * @return UserDetails object containing user information and authorities
-     * @throws UsernameNotFoundException if admin user is not found
+     * @throws UsernameNotFoundException if username is not 'admin'
      */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         log.debug("Loading user details for username: {}", username);
         
-        AdminUser admin = repository.findByUsername(username)
-                .orElseThrow(() -> {
-                    log.warn("Admin user not found: {}", username);
-                    return new UsernameNotFoundException("Admin not found: " + username);
-                });
+        if (!ADMIN_USERNAME.equals(username)) {
+            log.warn("Admin user not found: {}", username);
+            throw new UsernameNotFoundException("Admin not found: " + username);
+        }
 
-        log.debug("User '{}' loaded successfully with role: {}", username, admin.getRole());
+        log.debug("User '{}' loaded successfully with role: {}", username, ADMIN_ROLE);
         
         return User.builder()
-                .username(admin.getUsername())
-                .password(admin.getPassword())
-                .roles(admin.getRole())
+                .username(ADMIN_USERNAME)
+                .password(passwordEncoder.encode(ADMIN_PASSWORD))
+                .roles(ADMIN_ROLE)
+                .build();
+    }
+
+    /**
+     * Returns the AdminUser entity for the given username.
+     * Used for JWT token generation with user details.
+     *
+     * @param username the username to look up
+     * @return AdminUser entity with user details
+     * @throws UsernameNotFoundException if username is not 'admin'
+     */
+    public AdminUser getAdminUser(String username) throws UsernameNotFoundException {
+        if (!ADMIN_USERNAME.equals(username)) {
+            throw new UsernameNotFoundException("Admin not found: " + username);
+        }
+        
+        return AdminUser.builder()
+                .id(1L)
+                .username(ADMIN_USERNAME)
+                .password(passwordEncoder.encode(ADMIN_PASSWORD))
+                .role(ADMIN_ROLE)
                 .build();
     }
 }
+

@@ -62,6 +62,17 @@ const Navbar = () => {
             >
               Contact Me
             </a>
+            <a
+              href="/admin"
+              className={`ml-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
+                isScrolled
+                  ? 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+                  : 'text-white/70 hover:text-white hover:bg-white/10'
+              }`}
+              title="Admin Panel"
+            >
+              Admin
+            </a>
           </div>
 
           {/* Mobile Menu Button */}
@@ -98,6 +109,13 @@ const Navbar = () => {
               className="block text-center btn-modern !py-3 !px-6"
             >
               Contact Me
+            </a>
+            <a
+              href="/admin"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="block text-center px-4 py-3 rounded-lg font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-sm"
+            >
+              Admin
             </a>
           </div>
         </div>

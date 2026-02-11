@@ -51,13 +51,18 @@ public class AuthController {
             
             // Verify password
             if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-                // Generate JWT token
-                String token = jwtUtil.generateToken(user.getUsername());
+                // Get AdminUser entity for token generation with user details
+                AdminUser adminUser = adminUserService.getAdminUser(request.getUsername());
+                
+                // Generate JWT token with user details
+                String token = jwtUtil.generateToken(adminUser);
                 log.info("User '{}' logged in successfully", request.getUsername());
                 
                 return ResponseEntity.ok(Map.of(
                     "token", token,
+                    "userId", adminUser.getId(),
                     "username", user.getUsername(),
+                    "role", adminUser.getRole(),
                     "message", "Login successful"
                 ));
             }

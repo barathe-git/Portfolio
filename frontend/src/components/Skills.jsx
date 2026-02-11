@@ -5,7 +5,7 @@ import AOS from 'aos';
 /**
  * Skills Component - Modern skill showcase with categories
  */
-const Skills = ({ skills }) => {
+const Skills = React.memo(({ skills }) => {
   useEffect(() => {
     AOS.init({ duration: 1000 });
   }, []);
@@ -112,6 +112,8 @@ const Skills = ({ skills }) => {
       </div>
     </section>
   );
-};
+});
+
+Skills.displayName = 'Skills';
 
 export default Skills;
