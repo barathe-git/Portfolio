@@ -5,7 +5,7 @@ import AOS from 'aos';
 /**
  * Projects Component - Showcase work with modern card design
  */
-const Projects = ({ projects }) => {
+const Projects = React.memo(({ projects }) => {
   useEffect(() => {
     AOS.init({ duration: 1000 });
   }, []);
@@ -129,6 +129,8 @@ const Projects = ({ projects }) => {
       </div>
     </section>
   );
-};
+});
+
+Projects.displayName = 'Projects';
 
 export default Projects;

@@ -46,6 +46,8 @@ out/
 .env.*
 !.env.example
 application.properties
+data.sql
+schema.sql
 
 ### Frontend build artifacts ###
 # Frontend production build is generated into backend static dir

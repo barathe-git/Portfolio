@@ -5,7 +5,7 @@ import AOS from 'aos';
 /**
  * Education Component - Academic background with modern card design
  */
-const Education = ({ education }) => {
+const Education = React.memo(({ education }) => {
   useEffect(() => {
     AOS.init({ duration: 1000 });
   }, []);
@@ -102,6 +102,8 @@ const Education = ({ education }) => {
       </div>
     </section>
   );
-};
+});
+
+Education.displayName = 'Education';
 
 export default Education;

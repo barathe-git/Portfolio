@@ -18,8 +18,8 @@ const api = axios.create({
  */
 api.interceptors.request.use(
   (config) => {
-    // Add JWT token if available
-    const token = localStorage.getItem('authToken');
+    // Add JWT token if available  
+    const token = localStorage.getItem('auth_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -31,17 +31,35 @@ api.interceptors.request.use(
 );
 
 /**
- * Response interceptor - handles common error cases
+ * Response interceptor - handles ApiResponse wrapper and common error cases
  */
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    // Unwrap ApiResponse format: { status, data, message, timestamp }
+    const apiResponse = response.data;
+    if (apiResponse && apiResponse.status === 'success') {
+      // Return the actual data from ApiResponse wrapper
+      return {
+        ...response,
+        data: apiResponse.data,
+        message: apiResponse.message,
+        apiStatus: apiResponse.status,
+      };
+    }
+    return response;
+  },
   (error) => {
     // Handle common errors (401, 403, 500, etc.)
     if (error.response) {
-      const { status } = error.response;
+      const { status, data } = error.response;
+      const errorMessage = data?.message || 'An error occurred';
+      
       switch (status) {
         case 401:
           console.error('Unauthorized - Please login');
+          // Clear auth on unauthorized
+          localStorage.removeItem('auth_token');
+          localStorage.removeItem('auth_user');
           break;
         case 403:
           console.error('Forbidden - Insufficient permissions');
@@ -49,12 +67,19 @@ api.interceptors.response.use(
         case 404:
           console.error('Resource not found');
           break;
+        case 409:
+          console.error('Conflict -', errorMessage);
+          break;
         case 500:
           console.error('Server error - Please try again later');
           break;
         default:
-          console.error('An error occurred:', error.message);
+          console.error('An error occurred:', errorMessage);
       }
+      
+      // Attach parsed error info to the error object
+      error.errorMessage = errorMessage;
+      error.errorData = data?.data;
     }
     return Promise.reject(error);
   }

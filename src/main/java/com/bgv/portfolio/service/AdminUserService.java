@@ -1,5 +1,6 @@
 package com.bgv.portfolio.service;
 
+import com.bgv.portfolio.dto.SignupRequest;
 import com.bgv.portfolio.model.AdminUser;
 import com.bgv.portfolio.repository.AdminUserRepository;
 import lombok.RequiredArgsConstructor;
@@ -8,43 +9,97 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 /**
  * Service for loading admin user details for Spring Security authentication.
- * Implements UserDetailsService to integrate with Spring Security's authentication mechanism.
+ * Fetches user from database using AdminUserRepository.
  */
 @Service
-@RequiredArgsConstructor
 @Slf4j
+@RequiredArgsConstructor
 public class AdminUserService implements UserDetailsService {
 
-    private final AdminUserRepository repository;
+    private final AdminUserRepository adminUserRepository;
 
     /**
      * Loads user details by username for authentication.
-     * This method is called by Spring Security during authentication process.
+     * Fetches user from admin_user table.
      *
      * @param username the username of the admin to load
      * @return UserDetails object containing user information and authorities
-     * @throws UsernameNotFoundException if admin user is not found
+     * @throws UsernameNotFoundException if username is not found
      */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         log.debug("Loading user details for username: {}", username);
         
-        AdminUser admin = repository.findByUsername(username)
+        AdminUser adminUser = adminUserRepository.findByUsername(username)
                 .orElseThrow(() -> {
                     log.warn("Admin user not found: {}", username);
                     return new UsernameNotFoundException("Admin not found: " + username);
                 });
 
-        log.debug("User '{}' loaded successfully with role: {}", username, admin.getRole());
+        log.debug("User '{}' loaded successfully with role: {}", username, adminUser.getRole());
         
         return User.builder()
-                .username(admin.getUsername())
-                .password(admin.getPassword())
-                .roles(admin.getRole())
+                .username(adminUser.getUsername())
+                .password(adminUser.getPassword())
+                .roles(adminUser.getRole() != null ? adminUser.getRole() : "ADMIN")
                 .build();
     }
+
+    /**
+     * Returns the AdminUser entity for the given username.
+     * Used for JWT token generation with user details.
+     *
+     * @param username the username to look up
+     * @return AdminUser entity with user details
+     * @throws UsernameNotFoundException if username is not found
+     */
+    public AdminUser getAdminUser(String username) throws UsernameNotFoundException {
+        return adminUserRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Admin not found: " + username));
+    }
+
+    /**
+     * Checks if a username already exists in the database.
+     *
+     * @param username the username to check
+     * @return true if username exists, false otherwise
+     */
+    public boolean existsByUsername(String username) {
+        return adminUserRepository.existsByUsername(username);
+    }
+
+    /**
+     * Checks if an email already exists in the database.
+     *
+     * @param email the email to check
+     * @return true if email exists, false otherwise
+     */
+    public boolean existsByEmail(String email) {
+        return adminUserRepository.existsByEmail(email);
+    }
+
+    /**
+     * Creates a new user with the given details.
+     *
+     * @param request SignupRequest containing user details
+     * @param passwordEncoder PasswordEncoder to hash the password
+     * @return the created AdminUser entity
+     */
+    public AdminUser createUser(SignupRequest request, PasswordEncoder passwordEncoder) {
+        AdminUser newUser = AdminUser.builder()
+                .username(request.getUsername())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .email(request.getEmail())
+                .phoneNumber(request.getPhoneNumber())
+                .role(request.getRole())
+                .build();
+        
+        return adminUserRepository.save(newUser);
+    }
 }
+

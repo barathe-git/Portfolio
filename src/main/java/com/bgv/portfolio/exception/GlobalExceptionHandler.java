@@ -1,15 +1,18 @@
 package com.bgv.portfolio.exception;
 
+import com.bgv.portfolio.dto.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,24 +20,48 @@ import java.util.Map;
 @Slf4j
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleAuthorizationDeniedException(
+            AuthorizationDeniedException ex, HttpServletRequest request) {
+        log.warn("Authorization denied for request: {} - {}", request.getRequestURI(), ex.getMessage());
+        
+        return new ResponseEntity<>(
+                ApiResponse.error("Access denied. You don't have permission to perform this action.", request.getRequestURI()),
+                HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleAccessDeniedException(
+            AccessDeniedException ex, HttpServletRequest request) {
+        log.warn("Access denied for request: {} - {}", request.getRequestURI(), ex.getMessage());
+        
+        return new ResponseEntity<>(
+                ApiResponse.error("Access denied. You don't have permission to perform this action.", request.getRequestURI()),
+                HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ApiResponse<Void>> handleAuthenticationException(
+            AuthenticationException ex, HttpServletRequest request) {
+        log.warn("Authentication failed for request: {} - {}", request.getRequestURI(), ex.getMessage());
+        
+        return new ResponseEntity<>(
+                ApiResponse.error("Authentication required. Please login to access this resource.", request.getRequestURI()),
+                HttpStatus.UNAUTHORIZED);
+    }
+
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleResourceNotFoundException(
+    public ResponseEntity<ApiResponse<Void>> handleResourceNotFoundException(
             ResourceNotFoundException ex, HttpServletRequest request) {
         log.error("Resource not found: {}", ex.getMessage());
         
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
-                .status(HttpStatus.NOT_FOUND.value())
-                .error(HttpStatus.NOT_FOUND.getReasonPhrase())
-                .message(ex.getMessage())
-                .path(request.getRequestURI())
-                .build();
-        
-        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(
+                ApiResponse.error(ex.getMessage(), request.getRequestURI()),
+                HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleValidationException(
+    public ResponseEntity<ApiResponse<Map<String, String>>> handleValidationException(
             MethodArgumentNotValidException ex, HttpServletRequest request) {
         log.error("Validation error: {}", ex.getMessage());
         
@@ -45,32 +72,19 @@ public class GlobalExceptionHandler {
             validationErrors.put(fieldName, errorMessage);
         });
 
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
-                .status(HttpStatus.BAD_REQUEST.value())
-                .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
-                .message("Validation failed")
-                .path(request.getRequestURI())
-                .validationErrors(validationErrors)
-                .build();
-        
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(
+                ApiResponse.error("Validation failed", validationErrors, request.getRequestURI()),
+                HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGlobalException(
+    public ResponseEntity<ApiResponse<Void>> handleGlobalException(
             Exception ex, HttpServletRequest request) {
         log.error("Unexpected error occurred", ex);
         
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
-                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                .error(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
-                .message("An unexpected error occurred")
-                .path(request.getRequestURI())
-                .build();
-        
-        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(
+                ApiResponse.error("An unexpected error occurred", request.getRequestURI()),
+                HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
 

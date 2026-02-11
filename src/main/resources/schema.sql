@@ -1,0 +1,4 @@
+-- Admin user table is no longer needed
+-- Credentials are hardcoded in AdminUserService.java
+-- username: admin
+-- password: admin

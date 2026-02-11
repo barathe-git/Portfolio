@@ -24,8 +24,8 @@ import org.springframework.http.HttpMethod;
  * Configures Spring Security with JWT authentication, CORS, and endpoint authorization
  */
 @Configuration
-@EnableMethodSecurity
 @RequiredArgsConstructor
+@EnableMethodSecurity
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -33,7 +33,6 @@ public class SecurityConfig {
     // Public endpoints that don't require authentication
     private static final String[] PUBLIC_ENDPOINTS = {
         "/api/auth/**",
-        "/api/admin/**",
         "/api/profile",
         "/api/skills",
         "/api/projects",

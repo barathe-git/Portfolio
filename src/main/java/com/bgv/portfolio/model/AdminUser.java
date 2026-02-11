@@ -22,5 +22,11 @@ public class AdminUser {
     @Column(nullable = false)
     private String password;
 
+    @Column(unique = true)
+    private String email;
+
+    @Column(name = "phone_number")
+    private String phoneNumber;
+
     private String role; // e.g., "ADMIN"
 }

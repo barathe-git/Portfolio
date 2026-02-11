@@ -6,13 +6,26 @@
 @import 'aos/dist/aos.css';
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+    @apply bg-slate-900;
+  }
+  
   body {
     @apply bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:to-slate-800;
     @apply text-slate-900 dark:text-slate-100;
+    @apply min-h-screen;
   }
   
-  html {
-    scroll-behavior: smooth;
+  /* Overscroll background color */
+  :root {
+    background-color: #0f172a; /* slate-900 for dark mode overscroll */
+  }
+  
+  @media (prefers-color-scheme: light) {
+    :root {
+      background-color: #f8fafc; /* slate-50 for light mode overscroll */
+    }
   }
 }
 

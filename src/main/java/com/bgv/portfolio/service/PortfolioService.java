@@ -35,6 +35,14 @@ public class PortfolioService {
     }
 
     @Transactional(readOnly = true)
+    public ProfileDTO getProfileById(Long id) {
+        log.debug("Fetching profile with id: {}" , id);
+        Profile profile = profileRepository.findByIdWithEagerLoading(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Profile not found with id: " + id));
+        return mapToDTO(profile);
+    }
+
+    @Transactional(readOnly = true)
     public List<SkillDTO> getSkills() {
         log.debug("Fetching all skills from database");
         return skillRepository.findAll().stream()
@@ -53,7 +61,7 @@ public class PortfolioService {
     @Transactional(readOnly = true)
     public List<ExperienceDTO> getExperiences() {
         log.debug("Fetching all experiences from database");
-        return experienceRepository.findAll().stream()
+        return experienceRepository.findAllWithEagerProjects().stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }
@@ -111,6 +119,162 @@ public class PortfolioService {
         }
         skillRepository.deleteById(id);
         log.info("Skill deleted successfully");
+    }
+
+    // -------- Additional CRUD Operations --------
+
+    @Transactional(readOnly = true)
+    public ProjectDTO getProjectById(Long id) {
+        log.debug("Fetching project with id: {}", id);
+        Project project = projectRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Project not found with id: " + id));
+        return mapToDTO(project);
+    }
+
+    public ProjectDTO updateProject(Long id, ProjectDTO dto) {
+        log.info("Updating project with id: {}", id);
+        Project project = projectRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Project not found with id: " + id));
+        project.setName(dto.getName());
+        project.setDescription(dto.getDescription());
+        project.setGithubUrl(dto.getGithubUrl());
+        project.setTechStack(dto.getTechStack());
+        project.setHighlight(dto.getHighlight());
+        project.setLiveDemoUrl(dto.getLiveDemoUrl());
+        projectRepository.save(project);
+        log.info("Project updated successfully");
+        return mapToDTO(project);
+    }
+
+    public void deleteProject(Long id) {
+        log.info("Deleting project with id: {}", id);
+        if (id == null || !projectRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Project not found with id: " + id);
+        }
+        projectRepository.deleteById(id);
+        log.info("Project deleted successfully");
+    }
+
+    @Transactional(readOnly = true)
+    public ExperienceDTO getExperienceById(Long id) {
+        log.debug("Fetching experience with id: {}", id);
+        Experience experience = experienceRepository.findByIdWithEagerProjects(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Experience not found with id: " + id));
+        return mapToDTO(experience);
+    }
+
+    public ExperienceDTO addExperience(ExperienceDTO dto) {
+        log.info("Creating new experience: {}", dto.getCompany());
+        Experience experience = Experience.builder()
+                .company(dto.getCompany())
+                .role(dto.getRole())
+                .duration(dto.getDuration())
+                .description(dto.getDescription())
+                .build();
+        Experience saved = experienceRepository.save(experience);
+        log.info("Experience created successfully with id: {}", saved.getId());
+        return mapToDTO(saved);
+    }
+
+    public ExperienceDTO updateExperience(Long id, ExperienceDTO dto) {
+        log.info("Updating experience with id: {}", id);
+        Experience experience = experienceRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Experience not found with id: " + id));
+        experience.setCompany(dto.getCompany());
+        experience.setRole(dto.getRole());
+        experience.setDuration(dto.getDuration());
+        experience.setDescription(dto.getDescription());
+        experienceRepository.save(experience);
+        log.info("Experience updated successfully");
+        return mapToDTO(experience);
+    }
+
+    public void deleteExperience(Long id) {
+        log.info("Deleting experience with id: {}", id);
+        if (id == null || !experienceRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Experience not found with id: " + id);
+        }
+        experienceRepository.deleteById(id);
+        log.info("Experience deleted successfully");
+    }
+
+    @Transactional(readOnly = true)
+    public EducationDTO getEducationById(Long id) {
+        log.debug("Fetching education with id: {}", id);
+        Education education = educationRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Education not found with id: " + id));
+        return mapToDTO(education);
+    }
+
+    public EducationDTO addEducation(EducationDTO dto) {
+        log.info("Creating new education record: {}", dto.getInstitute());
+        Education education = Education.builder()
+                .institute(dto.getInstitute())
+                .degree(dto.getDegree())
+                .cgpa(dto.getCgpa())
+                .percentage(dto.getPercentage())
+                .board(dto.getBoard())
+                .duration(dto.getDuration())
+                .build();
+        Education saved = educationRepository.save(education);
+        log.info("Education record created successfully with id: {}", saved.getId());
+        return mapToDTO(saved);
+    }
+
+    public EducationDTO updateEducation(Long id, EducationDTO dto) {
+        log.info("Updating education with id: {}", id);
+        Education education = educationRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Education not found with id: " + id));
+        education.setInstitute(dto.getInstitute());
+        education.setDegree(dto.getDegree());
+        education.setCgpa(dto.getCgpa());
+        education.setPercentage(dto.getPercentage());
+        education.setBoard(dto.getBoard());
+        education.setDuration(dto.getDuration());
+        educationRepository.save(education);
+        log.info("Education updated successfully");
+        return mapToDTO(education);
+    }
+
+    public void deleteEducation(Long id) {
+        log.info("Deleting education with id: {}", id);
+        if (id == null || !educationRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Education not found with id: " + id);
+        }
+        educationRepository.deleteById(id);
+        log.info("Education deleted successfully");
+    }
+
+    @Transactional(readOnly = true)
+    public SkillDTO getSkillById(Long id) {
+        log.debug("Fetching skill with id: {}", id);
+        Skill skill = skillRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Skill not found with id: " + id));
+        return mapToDTO(skill);
+    }
+
+    public SkillDTO addSkill(SkillDTO dto) {
+        log.info("Creating new skill: {}", dto.getName());
+        Skill skill = Skill.builder()
+                .name(dto.getName())
+                .level(dto.getLevel())
+                .category(dto.getCategory())
+                .build();
+        Skill saved = skillRepository.save(skill);
+        log.info("Skill created successfully with id: {}", saved.getId());
+        return mapToDTO(saved);
+    }
+
+    public SkillDTO updateSkill(Long id, SkillDTO dto) {
+        log.info("Updating skill with id: {}", id);
+        Skill skill = skillRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Skill not found with id: " + id));
+        skill.setName(dto.getName());
+        skill.setLevel(dto.getLevel());
+        skill.setCategory(dto.getCategory());
+        skillRepository.save(skill);
+        log.info("Skill updated successfully");
+        return mapToDTO(skill);
     }
 
     // ---------------- Mapping Helpers ----------------

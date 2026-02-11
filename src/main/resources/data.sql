@@ -1,0 +1,4 @@
+-- Admin credentials are now hardcoded in AdminUserService.java
+-- username: admin
+-- password: admin
+-- No database initialization needed for admin users
