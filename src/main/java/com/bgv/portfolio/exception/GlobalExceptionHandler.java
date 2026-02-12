@@ -1,5 +1,6 @@
 package com.bgv.portfolio.exception;
 
+import com.bgv.portfolio.constants.AppConstants;
 import com.bgv.portfolio.dto.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +27,7 @@ public class GlobalExceptionHandler {
         log.warn("Authorization denied for request: {} - {}", request.getRequestURI(), ex.getMessage());
         
         return new ResponseEntity<>(
-                ApiResponse.error("Access denied. You don't have permission to perform this action.", request.getRequestURI()),
+                ApiResponse.error(AppConstants.ERR_ACCESS_DENIED, request.getRequestURI()),
                 HttpStatus.FORBIDDEN);
     }
 
@@ -36,7 +37,7 @@ public class GlobalExceptionHandler {
         log.warn("Access denied for request: {} - {}", request.getRequestURI(), ex.getMessage());
         
         return new ResponseEntity<>(
-                ApiResponse.error("Access denied. You don't have permission to perform this action.", request.getRequestURI()),
+                ApiResponse.error(AppConstants.ERR_ACCESS_DENIED, request.getRequestURI()),
                 HttpStatus.FORBIDDEN);
     }
 
@@ -46,7 +47,7 @@ public class GlobalExceptionHandler {
         log.warn("Authentication failed for request: {} - {}", request.getRequestURI(), ex.getMessage());
         
         return new ResponseEntity<>(
-                ApiResponse.error("Authentication required. Please login to access this resource.", request.getRequestURI()),
+                ApiResponse.error(AppConstants.ERR_AUTHENTICATION_REQUIRED, request.getRequestURI()),
                 HttpStatus.UNAUTHORIZED);
     }
 
@@ -73,7 +74,7 @@ public class GlobalExceptionHandler {
         });
 
         return new ResponseEntity<>(
-                ApiResponse.error("Validation failed", validationErrors, request.getRequestURI()),
+                ApiResponse.error(AppConstants.ERR_VALIDATION_FAILED, validationErrors, request.getRequestURI()),
                 HttpStatus.BAD_REQUEST);
     }
 
@@ -83,7 +84,7 @@ public class GlobalExceptionHandler {
         log.error("Unexpected error occurred", ex);
         
         return new ResponseEntity<>(
-                ApiResponse.error("An unexpected error occurred", request.getRequestURI()),
+                ApiResponse.error(AppConstants.ERR_UNEXPECTED, request.getRequestURI()),
                 HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

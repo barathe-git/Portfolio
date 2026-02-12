@@ -1,5 +1,6 @@
 package com.bgv.portfolio.security;
 
+import com.bgv.portfolio.constants.AppConstants;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,9 +28,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-
-    private static final String BEARER_PREFIX = "Bearer ";
-    private static final int BEARER_PREFIX_LENGTH = 7;
     
     private final JwtUtil jwtUtil;
 
@@ -47,12 +45,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     @NonNull FilterChain filterChain)
             throws ServletException, IOException {
 
-        final String authHeader = request.getHeader("Authorization");
+        final String authHeader = request.getHeader(AppConstants.AUTH_HEADER);
         log.info("Processing request: {} {}, Auth header present: {}", 
                 request.getMethod(), request.getRequestURI(), authHeader != null);
         
         // Skip if no Authorization header present
-        if (authHeader == null || !authHeader.startsWith(BEARER_PREFIX)) {
+        if (authHeader == null || !authHeader.startsWith(AppConstants.BEARER_PREFIX)) {
             log.info("No valid Authorization header, skipping JWT auth");
             filterChain.doFilter(request, response);
             return;
@@ -60,7 +58,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         try {
             // Extract JWT token (remove "Bearer " prefix)
-            String jwt = authHeader.substring(BEARER_PREFIX_LENGTH);
+            String jwt = authHeader.substring(AppConstants.BEARER_PREFIX_LENGTH);
             log.info("Extracted JWT token, length: {}", jwt.length());
             String username = jwtUtil.extractUsername(jwt);
             log.info("Extracted username: {}", username);

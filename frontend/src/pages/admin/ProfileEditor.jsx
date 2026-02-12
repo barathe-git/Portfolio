@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../../context/AuthContext';
 import ProfileForm from '../../components/forms/ProfileForm';
-import { portfolioAPI } from '../../api/api';
+import { API_CONFIG } from '../../constants';
 
 /**
  * ProfileEditor - Admin page for editing profile
@@ -21,7 +21,7 @@ function ProfileEditor() {
   const fetchProfile = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/profile', {
+      const response = await fetch(`${API_CONFIG.BASE_URL}/profile`, {
         headers: { 'Authorization': `Bearer ${authContext.token}` }
       });
       if (response.ok) {
@@ -46,7 +46,7 @@ function ProfileEditor() {
       setLoading(true);
       setError(null);
       const response = await fetch(
-        `/api/profile/${profile.id}`,
+        `${API_CONFIG.BASE_URL}/profile/${profile.id}`,
         {
           method: 'PUT',
           headers: {

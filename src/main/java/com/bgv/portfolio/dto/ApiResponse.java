@@ -1,5 +1,6 @@
 package com.bgv.portfolio.dto;
 
+import com.bgv.portfolio.enums.ApiStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,7 +37,7 @@ public class ApiResponse<T> {
      */
     public static <T> ApiResponse<T> success(T data) {
         return ApiResponse.<T>builder()
-                .status("success")
+                .status(ApiStatus.SUCCESS.getValue())
                 .data(data)
                 .timestamp(LocalDateTime.now())
                 .build();
@@ -52,7 +53,7 @@ public class ApiResponse<T> {
      */
     public static <T> ApiResponse<T> success(T data, String message) {
         return ApiResponse.<T>builder()
-                .status("success")
+                .status(ApiStatus.SUCCESS.getValue())
                 .data(data)
                 .message(message)
                 .timestamp(LocalDateTime.now())
@@ -67,7 +68,7 @@ public class ApiResponse<T> {
      */
     public static ApiResponse<Void> success(String message) {
         return ApiResponse.<Void>builder()
-                .status("success")
+                .status(ApiStatus.SUCCESS.getValue())
                 .message(message)
                 .timestamp(LocalDateTime.now())
                 .build();
@@ -82,7 +83,7 @@ public class ApiResponse<T> {
      */
     public static ApiResponse<Void> error(String message, String path) {
         return ApiResponse.<Void>builder()
-                .status("error")
+                .status(ApiStatus.ERROR.getValue())
                 .message(message)
                 .path(path)
                 .timestamp(LocalDateTime.now())
@@ -100,7 +101,7 @@ public class ApiResponse<T> {
      */
     public static <T> ApiResponse<T> error(String message, T data, String path) {
         return ApiResponse.<T>builder()
-                .status("error")
+                .status(ApiStatus.ERROR.getValue())
                 .message(message)
                 .data(data)
                 .path(path)

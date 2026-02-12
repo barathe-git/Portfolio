@@ -1,6 +1,7 @@
 package com.bgv.portfolio.security;
 
 import com.bgv.portfolio.model.AdminUser;
+import com.bgv.portfolio.constants.JwtClaims;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
@@ -69,11 +70,11 @@ public class JwtUtil {
         Date expiryDate = new Date(now.getTime() + expiration);
         
         Map<String, Object> claims = new HashMap<>();
-        claims.put("userId", user.getId());
-        claims.put("username", user.getUsername());
-        claims.put("email", user.getEmail());
-        claims.put("phoneNumber", user.getPhoneNumber());
-        claims.put("role", user.getRole());
+        claims.put(JwtClaims.USER_ID, user.getId());
+        claims.put(JwtClaims.USERNAME, user.getUsername());
+        claims.put(JwtClaims.EMAIL, user.getEmail());
+        claims.put(JwtClaims.PHONE_NUMBER, user.getPhoneNumber());
+        claims.put(JwtClaims.ROLE, user.getRole() != null ? user.getRole().getValue() : null);
         
         return Jwts.builder()
                 .claims(claims)
@@ -91,7 +92,7 @@ public class JwtUtil {
      * @return the user ID stored in the token
      */
     public Long extractUserId(String token) {
-        Object userId = getClaims(token).get("userId");
+        Object userId = getClaims(token).get(JwtClaims.USER_ID);
         if (userId instanceof Number) {
             return ((Number) userId).longValue();
         }
@@ -105,7 +106,7 @@ public class JwtUtil {
      * @return the role stored in the token
      */
     public String extractRole(String token) {
-        return (String) getClaims(token).get("role");
+        return (String) getClaims(token).get(JwtClaims.ROLE);
     }
 
     /**
@@ -178,11 +179,11 @@ public class JwtUtil {
     public Map<String, Object> extractUserDetails(String token) {
         Claims claims = getClaims(token);
         Map<String, Object> userDetails = new HashMap<>();
-        userDetails.put("userId", claims.get("userId"));
-        userDetails.put("username", claims.getSubject());
-        userDetails.put("email", claims.get("email"));
-        userDetails.put("phoneNumber", claims.get("phoneNumber"));
-        userDetails.put("role", claims.get("role"));
+        userDetails.put(JwtClaims.USER_ID, claims.get(JwtClaims.USER_ID));
+        userDetails.put(JwtClaims.USERNAME, claims.getSubject());
+        userDetails.put(JwtClaims.EMAIL, claims.get(JwtClaims.EMAIL));
+        userDetails.put(JwtClaims.PHONE_NUMBER, claims.get(JwtClaims.PHONE_NUMBER));
+        userDetails.put(JwtClaims.ROLE, claims.get(JwtClaims.ROLE));
         return userDetails;
     }
 
@@ -193,7 +194,7 @@ public class JwtUtil {
      * @return the email stored in the token
      */
     public String extractEmail(String token) {
-        return (String) getClaims(token).get("email");
+        return (String) getClaims(token).get(JwtClaims.EMAIL);
     }
 
     /**
@@ -203,6 +204,6 @@ public class JwtUtil {
      * @return the phone number stored in the token
      */
     public String extractPhoneNumber(String token) {
-        return (String) getClaims(token).get("phoneNumber");
+        return (String) getClaims(token).get(JwtClaims.PHONE_NUMBER);
     }
 }

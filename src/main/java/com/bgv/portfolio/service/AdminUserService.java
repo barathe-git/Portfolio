@@ -1,6 +1,7 @@
 package com.bgv.portfolio.service;
 
 import com.bgv.portfolio.dto.SignupRequest;
+import com.bgv.portfolio.enums.Role;
 import com.bgv.portfolio.model.AdminUser;
 import com.bgv.portfolio.repository.AdminUserRepository;
 import lombok.RequiredArgsConstructor;
@@ -41,12 +42,13 @@ public class AdminUserService implements UserDetailsService {
                     return new UsernameNotFoundException("Admin not found: " + username);
                 });
 
-        log.debug("User '{}' loaded successfully with role: {}", username, adminUser.getRole());
+        String roleValue = adminUser.getRole() != null ? adminUser.getRole().getValue() : Role.VIEW.getValue();
+        log.debug("User '{}' loaded successfully with role: {}", username, roleValue);
         
         return User.builder()
                 .username(adminUser.getUsername())
                 .password(adminUser.getPassword())
-                .roles(adminUser.getRole() != null ? adminUser.getRole() : "ADMIN")
+                .roles(roleValue)
                 .build();
     }
 

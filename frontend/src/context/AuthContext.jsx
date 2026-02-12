@@ -1,4 +1,5 @@
 import { createContext, useState, useEffect, useCallback, useContext as useReactContext } from 'react';
+import { API_CONFIG, STORAGE_KEYS, API_STATUS, ERROR_MESSAGES } from '../constants';
 
 /**
  * AuthContext - Manages JWT token and admin authentication
@@ -9,12 +10,12 @@ export const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const [token, setToken] = useState(() => {
     // Load token from localStorage on mount
-    return localStorage.getItem('auth_token') || null;
+    return localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN) || null;
   });
 
   const [user, setUser] = useState(() => {
     // Load user from localStorage on mount
-    const stored = localStorage.getItem('auth_user');
+    const stored = localStorage.getItem(STORAGE_KEYS.AUTH_USER);
     return stored ? JSON.parse(stored) : null;
   });
 
@@ -24,10 +25,10 @@ export function AuthProvider({ children }) {
   // Update localStorage whenever token changes
   useEffect(() => {
     if (token) {
-      localStorage.setItem('auth_token', token);
+      localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, token);
       setIsAuthenticated(true);
     } else {
-      localStorage.removeItem('auth_token');
+      localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
       setIsAuthenticated(false);
     }
   }, [token]);
@@ -35,9 +36,9 @@ export function AuthProvider({ children }) {
   // Update localStorage whenever user changes
   useEffect(() => {
     if (user) {
-      localStorage.setItem('auth_user', JSON.stringify(user));
+      localStorage.setItem(STORAGE_KEYS.AUTH_USER, JSON.stringify(user));
     } else {
-      localStorage.removeItem('auth_user');
+      localStorage.removeItem(STORAGE_KEYS.AUTH_USER);
     }
   }, [user]);
 
@@ -49,7 +50,7 @@ export function AuthProvider({ children }) {
   const login = useCallback(async (username, password) => {
     setLoading(true);
     try {
-      const response = await fetch('/api/auth/login', {
+      const response = await fetch(`${API_CONFIG.BASE_URL}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
@@ -57,8 +58,8 @@ export function AuthProvider({ children }) {
 
       const result = await response.json();
 
-      if (!response.ok || result.status === 'error') {
-        throw new Error(result.message || 'Login failed');
+      if (!response.ok || result.status === API_STATUS.ERROR) {
+        throw new Error(result.message || ERROR_MESSAGES.INVALID_CREDENTIALS);
       }
 
       // Extract data from ApiResponse wrapper
@@ -75,7 +76,7 @@ export function AuthProvider({ children }) {
       return { success: true, message: result.message };
     } catch (error) {
       console.error('Login error:', error);
-      return { success: false, message: error.message || 'Login failed' };
+      return { success: false, message: error.message || ERROR_MESSAGES.INVALID_CREDENTIALS };
     } finally {
       setLoading(false);
     }
