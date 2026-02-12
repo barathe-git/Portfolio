@@ -38,12 +38,12 @@ function AdminNavbar() {
             <Eye className="w-4 h-4" />
             <span className="hidden sm:inline text-sm font-medium">View Resume</span>
           </a>
-          <div className="text-sm">
+          {/* <div className="text-sm">
             <p className="text-slate-600 dark:text-slate-400">Logged in as</p>
             <p className="font-semibold text-slate-900 dark:text-white">
               {authContext.user?.username}
             </p>
-          </div>
+          </div> */}
           <button
             onClick={handleLogout}
             className="flex items-center gap-2 px-4 py-2 text-slate-700 dark:text-slate-300 hover:text-red-600 dark:hover:text-red-400 transition-colors"

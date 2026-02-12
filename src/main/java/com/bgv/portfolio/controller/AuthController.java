@@ -1,5 +1,6 @@
 package com.bgv.portfolio.controller;
 
+import com.bgv.portfolio.constants.AppConstants;
 import com.bgv.portfolio.dto.ApiResponse;
 import com.bgv.portfolio.dto.SignupRequest;
 import com.bgv.portfolio.model.AdminUser;
@@ -70,19 +71,19 @@ public class AuthController {
                 data.put("username", adminUser.getUsername());
                 data.put("email", adminUser.getEmail());
                 data.put("phoneNumber", adminUser.getPhoneNumber());
-                data.put("role", adminUser.getRole());
+                data.put("role", adminUser.getRole() != null ? adminUser.getRole().getValue() : null);
                 
-                return ResponseEntity.ok(ApiResponse.success(data, "Login successful"));
+                return ResponseEntity.ok(ApiResponse.success(data, AppConstants.MSG_LOGIN_SUCCESS));
             }
             
             log.warn("Invalid password attempt for user: {}", request.getUsername());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(ApiResponse.error("Invalid credentials", null, "/api/auth/login"));
+                    .body(ApiResponse.error(AppConstants.ERR_INVALID_CREDENTIALS, null, "/api/auth/login"));
                     
         } catch (UsernameNotFoundException e) {
             log.warn("Login attempt for non-existent user: {}", request.getUsername());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(ApiResponse.error("Invalid credentials", null, "/api/auth/login"));
+                    .body(ApiResponse.error(AppConstants.ERR_INVALID_CREDENTIALS, null, "/api/auth/login"));
         }
     }
 
@@ -103,13 +104,13 @@ public class AuthController {
             // Check if username already exists
             if (adminUserService.existsByUsername(request.getUsername())) {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body(ApiResponse.error("Username already exists", null, "/api/auth/signup"));
+                        .body(ApiResponse.error(AppConstants.ERR_USERNAME_EXISTS, null, "/api/auth/signup"));
             }
             
             // Check if email already exists (if provided)
             if (request.getEmail() != null && adminUserService.existsByEmail(request.getEmail())) {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body(ApiResponse.error("Email already exists", null, "/api/auth/signup"));
+                        .body(ApiResponse.error(AppConstants.ERR_EMAIL_EXISTS, null, "/api/auth/signup"));
             }
             
             // Create new user
@@ -121,14 +122,14 @@ public class AuthController {
             data.put("username", newUser.getUsername());
             data.put("email", newUser.getEmail());
             data.put("phoneNumber", newUser.getPhoneNumber());
-            data.put("role", newUser.getRole());
+            data.put("role", newUser.getRole() != null ? newUser.getRole().getValue() : null);
             
-            return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(data, "User created successfully"));
+            return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(data, AppConstants.MSG_USER_CREATED));
             
         } catch (Exception e) {
             log.error("Error creating user: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(ApiResponse.error("Failed to create user", null, "/api/auth/signup"));
+                    .body(ApiResponse.error(AppConstants.ERR_INTERNAL_SERVER, null, "/api/auth/signup"));
         }
     }
 }

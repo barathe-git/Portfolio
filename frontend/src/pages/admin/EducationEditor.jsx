@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../../context/AuthContext';
 import EducationForm from "../../components/forms/EducationForm";
 import { Edit2, Trash2, Plus } from 'lucide-react';
+import { API_CONFIG } from '../../constants';
 
 /**
  * EducationEditor - Admin page for managing education
@@ -23,7 +24,7 @@ function EducationEditor() {
   const fetchEducations = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8080/api'}/education`, {
+      const response = await fetch(`${API_CONFIG.BASE_URL}/education`, {
         headers: { 'Authorization': `Bearer ${authContext.token}` }
       });
       if (response.ok) {
@@ -46,7 +47,7 @@ function EducationEditor() {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8080/api'}/education`, {
+      const response = await fetch(`${API_CONFIG.BASE_URL}/education`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -76,7 +77,7 @@ function EducationEditor() {
       setLoading(true);
       setError(null);
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:8080/api'}/education/${editingId}`,
+        `${API_CONFIG.BASE_URL}/education/${editingId}`,
         {
           method: 'PUT',
           headers: {
@@ -110,7 +111,7 @@ function EducationEditor() {
       setLoading(true);
       setError(null);
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:8080/api'}/education/${id}`,
+        `${API_CONFIG.BASE_URL}/education/${id}`,
         {
           method: 'DELETE',
           headers: { 'Authorization': `Bearer ${authContext.token}` }

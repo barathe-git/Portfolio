@@ -1,6 +1,8 @@
 package com.bgv.portfolio.security;
 
+import com.bgv.portfolio.constants.AppConstants;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -15,6 +17,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.springframework.http.HttpMethod;
@@ -29,6 +32,9 @@ import org.springframework.http.HttpMethod;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    
+    @Value("${cors.allowed-origins:}")
+    private String corsAllowedOrigins;
     
     // Public endpoints that don't require authentication
     private static final String[] PUBLIC_ENDPOINTS = {
@@ -86,11 +92,20 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         
-        // Allowed origins (frontend URLs)
-        configuration.setAllowedOrigins(List.of(
-            "http://localhost:3000",  // React dev server (CRA)
-            "http://localhost:5173"   // Vite dev server
-        ));
+        // Build allowed origins list
+        List<String> origins = new ArrayList<>();
+        origins.add(AppConstants.CORS_LOCALHOST_3000);  // React dev server (CRA)
+        origins.add(AppConstants.CORS_LOCALHOST_5173);  // Vite dev server
+        
+        // Add production origins from environment variable (comma-separated)
+        if (corsAllowedOrigins != null && !corsAllowedOrigins.isEmpty()) {
+            Arrays.stream(corsAllowedOrigins.split(","))
+                  .map(String::trim)
+                  .filter(s -> !s.isEmpty())
+                  .forEach(origins::add);
+        }
+        
+        configuration.setAllowedOrigins(origins);
         
         // Allowed HTTP methods
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
@@ -101,8 +116,8 @@ public class SecurityConfig {
         // Allow credentials (cookies, authorization headers)
         configuration.setAllowCredentials(true);
         
-        // Cache preflight response for 1 hour
-        configuration.setMaxAge(3600L);
+        // Cache preflight response
+        configuration.setMaxAge(AppConstants.CORS_MAX_AGE_SECONDS);
         
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

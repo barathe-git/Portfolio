@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../../context/AuthContext';
 import SkillForm from '../../components/forms/SkillForm';
 import { Edit2, Trash2, Plus } from 'lucide-react';
+import { API_CONFIG } from '../../constants';
 
 /**
  * SkillsEditor - Admin page for managing skills
@@ -23,7 +24,7 @@ function SkillsEditor() {
   const fetchSkills = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8080/api'}/skills`, {
+      const response = await fetch(`${API_CONFIG.BASE_URL}/skills`, {
         headers: { 'Authorization': `Bearer ${authContext.token}` }
       });
       if (response.ok) {
@@ -46,7 +47,7 @@ function SkillsEditor() {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8080/api'}/skills`, {
+      const response = await fetch(`${API_CONFIG.BASE_URL}/skills`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -76,7 +77,7 @@ function SkillsEditor() {
       setLoading(true);
       setError(null);
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:8080/api'}/skills/${editingId}`,
+        `${API_CONFIG.BASE_URL}/skills/${editingId}`,
         {
           method: 'PUT',
           headers: {
@@ -110,7 +111,7 @@ function SkillsEditor() {
       setLoading(true);
       setError(null);
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:8080/api'}/skills/${id}`,
+        `${API_CONFIG.BASE_URL}/skills/${id}`,
         {
           method: 'DELETE',
           headers: { 'Authorization': `Bearer ${authContext.token}` }

@@ -1,5 +1,6 @@
 package com.bgv.portfolio.model;
 
+import com.bgv.portfolio.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,5 +29,7 @@ public class AdminUser {
     @Column(name = "phone_number")
     private String phoneNumber;
 
-    private String role; // e.g., "ADMIN"
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
 }

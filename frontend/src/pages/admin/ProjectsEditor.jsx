@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../../context/AuthContext';
 import ProjectForm from '../../components/forms/ProjectForm';
 import { Edit2, Trash2, Plus } from 'lucide-react';
+import { API_CONFIG } from '../../constants';
 
 /**
  * ProjectsEditor - Admin page for managing projects
@@ -23,7 +24,7 @@ function ProjectsEditor() {
   const fetchProjects = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/projects', {
+      const response = await fetch(`${API_CONFIG.BASE_URL}/projects`, {
         headers: { 'Authorization': `Bearer ${authContext.token}` }
       });
       if (response.ok) {
@@ -46,7 +47,7 @@ function ProjectsEditor() {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8080/api'}/projects`, {
+      const response = await fetch(`${API_CONFIG.BASE_URL}/projects`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -76,7 +77,7 @@ function ProjectsEditor() {
       setLoading(true);
       setError(null);
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:8080/api'}/projects/${editingId}`,
+        `${API_CONFIG.BASE_URL}/projects/${editingId}`,
         {
           method: 'PUT',
           headers: {
@@ -110,7 +111,7 @@ function ProjectsEditor() {
       setLoading(true);
       setError(null);
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:8080/api'}/projects/${id}`,
+        `${API_CONFIG.BASE_URL}/projects/${id}`,
         {
           method: 'DELETE',
           headers: { 'Authorization': `Bearer ${authContext.token}` }

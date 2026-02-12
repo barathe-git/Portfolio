@@ -1,13 +1,18 @@
 import axios from 'axios';
-
-// API Configuration
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
+import { 
+  API_CONFIG, 
+  STORAGE_KEYS, 
+  API_STATUS, 
+  HTTP_STATUS, 
+  ERROR_MESSAGES 
+} from '../constants';
 
 /**
  * Axios instance configured for portfolio API
  */
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: API_CONFIG.BASE_URL,
+  timeout: API_CONFIG.TIMEOUT,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -19,7 +24,7 @@ const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     // Add JWT token if available  
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -37,7 +42,7 @@ api.interceptors.response.use(
   (response) => {
     // Unwrap ApiResponse format: { status, data, message, timestamp }
     const apiResponse = response.data;
-    if (apiResponse && apiResponse.status === 'success') {
+    if (apiResponse && apiResponse.status === API_STATUS.SUCCESS) {
       // Return the actual data from ApiResponse wrapper
       return {
         ...response,
@@ -52,26 +57,26 @@ api.interceptors.response.use(
     // Handle common errors (401, 403, 500, etc.)
     if (error.response) {
       const { status, data } = error.response;
-      const errorMessage = data?.message || 'An error occurred';
+      const errorMessage = data?.message || ERROR_MESSAGES.UNEXPECTED;
       
       switch (status) {
-        case 401:
-          console.error('Unauthorized - Please login');
+        case HTTP_STATUS.UNAUTHORIZED:
+          console.error(ERROR_MESSAGES.UNAUTHORIZED);
           // Clear auth on unauthorized
-          localStorage.removeItem('auth_token');
-          localStorage.removeItem('auth_user');
+          localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
+          localStorage.removeItem(STORAGE_KEYS.AUTH_USER);
           break;
-        case 403:
-          console.error('Forbidden - Insufficient permissions');
+        case HTTP_STATUS.FORBIDDEN:
+          console.error(ERROR_MESSAGES.FORBIDDEN);
           break;
-        case 404:
-          console.error('Resource not found');
+        case HTTP_STATUS.NOT_FOUND:
+          console.error(ERROR_MESSAGES.NOT_FOUND);
           break;
-        case 409:
+        case HTTP_STATUS.CONFLICT:
           console.error('Conflict -', errorMessage);
           break;
-        case 500:
-          console.error('Server error - Please try again later');
+        case HTTP_STATUS.INTERNAL_SERVER_ERROR:
+          console.error(ERROR_MESSAGES.SERVER_ERROR);
           break;
         default:
           console.error('An error occurred:', errorMessage);

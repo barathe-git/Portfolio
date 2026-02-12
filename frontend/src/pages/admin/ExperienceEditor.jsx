@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../../context/AuthContext';
 import ExperienceForm from '../../components/forms/ExperienceForm';
 import { Edit2, Trash2, Plus } from 'lucide-react';
+import { API_CONFIG } from '../../constants';
 
 /**
  * ExperienceEditor - Admin page for managing experiences
@@ -24,7 +25,7 @@ function ExperienceEditor() {
 
   const fetchProjects = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8080/api'}/projects`, {
+      const response = await fetch(`${API_CONFIG.BASE_URL}/projects`, {
         headers: { 'Authorization': `Bearer ${authContext.token}` }
       });
       if (response.ok) {
@@ -40,7 +41,7 @@ function ExperienceEditor() {
   const fetchExperiences = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8080/api'}/experience`, {
+      const response = await fetch(`${API_CONFIG.BASE_URL}/experience`, {
         headers: { 'Authorization': `Bearer ${authContext.token}` }
       });
       if (response.ok) {
@@ -63,7 +64,7 @@ function ExperienceEditor() {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8080/api'}/experience`, {
+      const response = await fetch(`${API_CONFIG.BASE_URL}/experience`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -93,7 +94,7 @@ function ExperienceEditor() {
       setLoading(true);
       setError(null);
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:8080/api'}/experience/${editingId}`,
+        `${API_CONFIG.BASE_URL}/experience/${editingId}`,
         {
           method: 'PUT',
           headers: {
@@ -127,7 +128,7 @@ function ExperienceEditor() {
       setLoading(true);
       setError(null);
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:8080/api'}/experience/${id}`,
+        `${API_CONFIG.BASE_URL}/experience/${id}`,
         {
           method: 'DELETE',
           headers: { 'Authorization': `Bearer ${authContext.token}` }
