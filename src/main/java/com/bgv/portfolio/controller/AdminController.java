@@ -2,6 +2,7 @@ package com.bgv.portfolio.controller;
 
 import com.bgv.portfolio.bootstrap.ResumeDataService;
 import com.bgv.portfolio.dto.ApiResponse;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +19,7 @@ public class AdminController {
     }
 
     @PostMapping("/reload-resume")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Void>> reloadResume() {
         try {
             resumeDataService.forceImportFromClasspath();

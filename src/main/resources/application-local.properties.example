@@ -7,12 +7,15 @@
 # `--spring.profiles.active=local` or set SPRING_PROFILES_ACTIVE=local
 ###########################################################
 
-# JWT configuration (REQUIRED)
+# Runtime JSON data
+portfolio.data.path=./data/portfolio.json
+
+# Single administrator
+admin.username=admin
+admin.password=REPLACE_WITH_A_STRONG_PASSWORD
+admin.email=
+admin.phone=
+
+# JWT configuration (REQUIRED for production)
 jwt.secret=REPLACE_WITH_A_SECURE_RANDOM_64_CHAR_HEX
 jwt.expiration=86400000
-
-# Example database overrides (optional)
-# spring.datasource.url=jdbc:postgresql://localhost:5432/portfolio_db
-# spring.datasource.username=postgres
-# spring.datasource.password=postgres
-

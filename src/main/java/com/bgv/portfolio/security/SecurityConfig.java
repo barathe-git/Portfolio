@@ -37,8 +37,7 @@ public class SecurityConfig {
     private String corsAllowedOrigins;
     
     // Public endpoints that don't require authentication
-    private static final String[] PUBLIC_ENDPOINTS = {
-        "/api/auth/**",
+    private static final String[] PUBLIC_GET_ENDPOINTS = {
         "/api/profile",
         "/api/skills",
         "/api/projects",
@@ -70,10 +69,12 @@ public class SecurityConfig {
                 
                 // Configure endpoint authorization
                 .authorizeHttpRequests(auth -> auth
-                    .requestMatchers(PUBLIC_ENDPOINTS).permitAll() // Public endpoints
-                    .requestMatchers(HttpMethod.POST, "/api/admin/reload-resume").permitAll()
-                    .requestMatchers("/api/**").authenticated()     // Protected API endpoints
-                        .anyRequest().permitAll()                       // Allow static resources
+                    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
+                    .requestMatchers(HttpMethod.GET, PUBLIC_GET_ENDPOINTS).permitAll()
+                    .requestMatchers("/swagger-ui/**", "/api-docs/**", "/v3/api-docs/**").permitAll()
+                    .requestMatchers("/api/**").hasRole("ADMIN")
+                    .anyRequest().permitAll()
                 )
                 
                 // Add JWT authentication filter before standard authentication filter
