@@ -1,109 +1,28 @@
-import React, { useEffect } from 'react';
-import { Briefcase, Calendar, MapPin } from 'lucide-react';
-import AOS from 'aos';
+import React from 'react';
+import { BriefcaseBusiness, CalendarDays, MapPin } from 'lucide-react';
 
-/**
- * Experience Component - Professional timeline with modern design
- */
 const Experience = React.memo(({ experiences }) => {
-  useEffect(() => {
-    AOS.init({ duration: 1000 });
-  }, []);
-
-  if (!experiences || experiences.length === 0) return null;
-
+  if (!experiences?.length) return null;
   return (
-    <section id="experience" className="section-container bg-gradient-to-br from-slate-50 to-purple-50 dark:from-slate-900 dark:to-slate-800">
-      <div className="max-w-5xl mx-auto">
-        {/* Section Header */}
-        <div data-aos="fade-up">
-          <h2 className="section-title">Work Experience</h2>
-          <p className="section-subtitle">
-            My professional journey and contributions
-          </p>
+    <section id="experience" className="bg-white">
+      <div className="section-shell grid gap-14 lg:grid-cols-[0.75fr_1.25fr] lg:gap-20">
+        <div className="lg:sticky lg:top-28 lg:self-start" data-aos="fade-up">
+          <p className="section-kicker">Experience</p>
+          <h2 className="section-heading">A journey shaped by ownership and continuous learning.</h2>
+          <p className="section-copy">Progressing through product teams and problem spaces while staying grounded in strong engineering fundamentals.</p>
         </div>
-
-        {/* Timeline */}
-        <div className="mt-12 relative">
-          {/* Timeline Line */}
-          <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-600 via-purple-600 to-pink-600 hidden md:block"></div>
-
-          {/* Experience Items */}
-          <div className="space-y-8">
-            {experiences.map((exp, index) => (
-              <div
-                key={exp.id}
-                className="relative"
-                data-aos="fade-up"
-                data-aos-delay={index * 100}
-              >
-                {/* Timeline Dot */}
-                <div className="absolute left-8 transform -translate-x-1/2 hidden md:block">
-                  <div className="timeline-dot"></div>
-                </div>
-
-                {/* Content Card */}
-                <div className="md:ml-20 glass-card p-6 hover:shadow-2xl transition-all duration-300">
-                  <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-4">
-                    <div className="flex items-start gap-4 mb-4 md:mb-0">
-                      <div className="w-14 h-14 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center flex-shrink-0">
-                        <Briefcase className="text-white" size={24} />
-                      </div>
-                      <div>
-                        <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-3">
-                          {exp.role} <span className="text-slate-400 dark:text-slate-500">|</span> <span className="text-blue-600 dark:text-blue-400">{exp.company}</span>
-                        </h3>
-                        {exp.location && (
-                          <p className="text-sm text-slate-600 dark:text-slate-400 flex items-center gap-1 mt-1">
-                            <MapPin size={14} />
-                            {exp.location}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-full text-sm font-medium mt-2">
-                      <Calendar size={16} />
-                      {exp.duration}
-                    </div>
-                  </div>
-
-                  {exp.description && (
-                    <p className="text-slate-600 dark:text-slate-400 mb-4">
-                      {exp.description}
-                    </p>
-                  )}
-
-                  {/* Associated Projects */}
-                  {exp.projects && exp.projects.length > 0 && (
-                    <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
-                      <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3 flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
-                        Key Projects:
-                      </h4>
-                      <div className="space-y-2">
-                        {exp.projects.map((project) => (
-                          <div
-                            key={project.id}
-                            className="pl-4 border-l-2 border-blue-600/30 hover:border-blue-600 transition-colors"
-                          >
-                            <p className="font-medium text-slate-800 dark:text-slate-200">
-                              {project.name}
-                            </p>
-                            {project.description && (
-                              <p className="text-sm text-slate-600 dark:text-slate-400">
-                                {project.description}
-                              </p>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
+        <div className="relative space-y-5 before:absolute before:bottom-8 before:left-6 before:top-8 before:w-px before:bg-slate-200 sm:before:left-7">
+          {experiences.map((exp, index) => (
+            <article key={exp.id || `${exp.company}-${exp.role}`} className="relative pl-16 sm:pl-20" data-aos="fade-up" data-aos-delay={index * 60}>
+              <span className={`absolute left-0 top-7 z-10 grid h-12 w-12 place-items-center rounded-2xl border-4 border-white sm:h-14 sm:w-14 ${index === 0 ? 'bg-orange-600 text-slate-950' : 'bg-blue-700 text-white'}`}><BriefcaseBusiness size={21} aria-hidden="true" /></span>
+              <div className="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-6 transition duration-200 hover:border-blue-200 hover:bg-white hover:shadow-xl hover:shadow-slate-200/50">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between"><div><p className="text-sm font-bold text-blue-700">{exp.company}</p><h3 className="mt-1 text-xl font-semibold text-slate-950">{exp.role}</h3></div><span className="inline-flex items-center gap-2 self-start rounded-full bg-white px-3 py-2 text-xs font-bold text-slate-600 ring-1 ring-slate-200"><CalendarDays size={15} aria-hidden="true" />{exp.duration}</span></div>
+                {exp.location && <p className="mt-3 flex items-center gap-2 text-sm text-slate-500"><MapPin size={15} aria-hidden="true" />{exp.location}</p>}
+                {exp.description && <p className="mt-4 leading-7 text-slate-600">{exp.description}</p>}
+                {exp.projects?.length > 0 && <div className="mt-6 border-t border-slate-200 pt-5"><p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Key projects</p><div className="mt-3 flex flex-wrap gap-2">{exp.projects.map((project) => <span key={project.id || project.name} className="tag">{project.name}</span>)}</div></div>}
               </div>
-            ))}
-          </div>
+            </article>
+          ))}
         </div>
       </div>
     </section>
@@ -111,5 +30,4 @@ const Experience = React.memo(({ experiences }) => {
 });
 
 Experience.displayName = 'Experience';
-
 export default Experience;

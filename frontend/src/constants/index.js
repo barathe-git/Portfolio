@@ -7,7 +7,9 @@
 // API Configuration
 // ===========================================
 export const API_CONFIG = {
-  BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api',
+  // Use Vite's same-origin proxy during local development. This avoids CORS
+  // failures whether the frontend is opened via localhost or 127.0.0.1.
+  BASE_URL: import.meta.env.VITE_API_BASE_URL || '/api',
   TIMEOUT: 10000, // 10 seconds
 };
 
@@ -186,4 +188,3 @@ export const VALIDATION = {
   PHONE_REGEX: /^\+?[0-9]{10,15}$/,
   EMAIL_REGEX: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
 };
-

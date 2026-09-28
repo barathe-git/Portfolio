@@ -1,97 +1,31 @@
-import React from 'react';
-import { X, FileText, Download, Table } from 'lucide-react';
+import { createElement, useEffect, useRef } from 'react';
+import { Braces, Download, FileText, Table, X } from 'lucide-react';
 
-/**
- * Download Modal Component - Allows users to download CV/Portfolio in different formats
- */
 const DownloadModal = ({ isOpen, onClose, onDownload }) => {
+  const closeRef = useRef(null);
+  useEffect(() => {
+    if (!isOpen) return undefined;
+    closeRef.current?.focus();
+    const onKeyDown = (event) => { if (event.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [isOpen, onClose]);
   if (!isOpen) return null;
 
-  const downloadOptions = [
-    {
-      id: 'html',
-      title: 'Resume (HTML)',
-      description: 'Professional resume in HTML format, ready to print as PDF',
-      icon: FileText,
-      color: 'from-blue-500 to-cyan-500',
-    },
-    {
-      id: 'csv',
-      title: 'Portfolio Data (CSV)',
-      description: 'All portfolio data in CSV format for Excel/Sheets',
-      icon: Table,
-      color: 'from-green-500 to-emerald-500',
-    },
-    {
-      id: 'json',
-      title: 'Portfolio (JSON)',
-      description: 'Complete portfolio data in JSON format',
-      icon: Download,
-      color: 'from-purple-500 to-pink-500',
-    },
+  const options = [
+    { id: 'html', title: 'Printable résumé', text: 'A polished HTML résumé ready to print or save as PDF.', icon: FileText },
+    { id: 'csv', title: 'Portfolio spreadsheet', text: 'Structured project and experience data for Excel or Sheets.', icon: Table },
+    { id: 'json', title: 'Portfolio JSON', text: 'The complete portfolio dataset in a developer-friendly format.', icon: Braces },
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="glass-card max-w-2xl w-full p-6 relative animate-fadeInUp">
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
-        >
-          <X size={24} />
-        </button>
-
-        {/* Header */}
-        <div className="mb-6">
-          <h2 className="text-3xl font-bold gradient-text mb-2">Download Portfolio</h2>
-          <p className="text-slate-600 dark:text-slate-400">
-            Choose your preferred format to download
-          </p>
-        </div>
-
-        {/* Download Options */}
-        <div className="space-y-4">
-          {downloadOptions.map((option) => {
-            const Icon = option.icon;
-            return (
-              <button
-                key={option.id}
-                onClick={() => {
-                  onDownload(option.id);
-                  onClose();
-                }}
-                className="w-full text-left p-4 rounded-xl border-2 border-slate-200 dark:border-slate-700 hover:border-blue-500 dark:hover:border-blue-500 transition-all duration-300 hover:shadow-lg group"
-              >
-                <div className="flex items-start gap-4">
-                  <div className={`w-14 h-14 bg-gradient-to-r ${option.color} rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300`}>
-                    <Icon className="text-white" size={28} />
-                  </div>
-                  <div className="flex-grow">
-                    <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1">
-                      {option.title}
-                    </h3>
-                    <p className="text-sm text-slate-600 dark:text-slate-400">
-                      {option.description}
-                    </p>
-                  </div>
-                  <Download className="text-slate-400 group-hover:text-blue-600 transition-colors" size={20} />
-                </div>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Info */}
-        <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-          <p className="text-sm text-blue-800 dark:text-blue-300">
-            💡 <strong>Tip:</strong> The HTML resume can be opened in a browser and printed to PDF using your browser's print function (Ctrl/Cmd + P).
-          </p>
-        </div>
+    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/65 p-4 backdrop-blur-sm" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
+      <div role="dialog" aria-modal="true" aria-labelledby="download-title" className="w-full max-w-xl rounded-[1.75rem] bg-white p-6 shadow-2xl sm:p-8">
+        <div className="flex items-start justify-between gap-4"><div><p className="section-kicker">Download</p><h2 id="download-title" className="mt-3 text-2xl font-semibold text-slate-950">Choose a format</h2><p className="mt-2 text-sm leading-6 text-slate-600">Take the portfolio with you in the format that fits your workflow.</p></div><button ref={closeRef} type="button" onClick={onClose} className="icon-button shrink-0" aria-label="Close download dialog"><X size={20} aria-hidden="true" /></button></div>
+        <div className="mt-7 space-y-3">{options.map(({ id, title, text, icon: Icon }) => <button key={id} type="button" onClick={() => { onDownload(id); onClose(); }} className="group flex min-h-20 w-full items-center gap-4 rounded-2xl border border-slate-200 p-4 text-left transition duration-200 hover:border-blue-300 hover:bg-blue-50"><span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-blue-100 text-blue-700">{createElement(Icon, { size: 22, 'aria-hidden': true })}</span><span className="flex-1"><strong className="block font-heading text-sm text-slate-900">{title}</strong><span className="mt-1 block text-xs leading-5 text-slate-500">{text}</span></span><Download size={18} className="text-slate-400 transition group-hover:text-blue-700" aria-hidden="true" /></button>)}</div>
       </div>
     </div>
   );
 };
 
 export default DownloadModal;
-
