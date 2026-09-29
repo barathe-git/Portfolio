@@ -74,9 +74,9 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:3000 in a browser. The Vite development server proxies `/api` requests to the backend on port `8080`.
+Open http://localhost:3000 in a browser. The Vite development server proxies `/api` requests to the backend on port `8080` when `VITE_API_BASE_URL` is not set.
 
-On Vercel, `frontend/vercel.json` proxies `/api/*` to the deployed Render backend at `https://portfolio-8rom.onrender.com`.
+On Vercel, set `VITE_API_BASE_URL` to the complete Render API base URL, for example `https://portfolio-8rom.onrender.com/api`. Vite injects this variable during the build, so redeploy the frontend after changing it. Browser requests will then go directly to Render rather than to the Vercel domain.
 
 ### 3. Sign in to the admin dashboard
 
@@ -147,6 +147,8 @@ For a custom frontend API URL, create `frontend/.env.local`:
 ```bash
 VITE_API_BASE_URL=http://localhost:8080/api
 ```
+
+You can copy `frontend/.env.example` as a starting point. A trailing slash is optional and is removed by the application.
 
 ## Build and test
 

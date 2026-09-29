@@ -6,10 +6,12 @@
 // ===========================================
 // API Configuration
 // ===========================================
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || '/api').replace(/\/+$/, '');
+
 export const API_CONFIG = {
   // Use Vite's same-origin proxy during local development. This avoids CORS
   // failures whether the frontend is opened via localhost or 127.0.0.1.
-  BASE_URL: import.meta.env.VITE_API_BASE_URL || '/api',
+  BASE_URL: API_BASE_URL,
   TIMEOUT: 10000, // 10 seconds
 };
 

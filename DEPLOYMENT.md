@@ -34,9 +34,11 @@ Import the repository and use:
 - Framework preset: Vite
 - Build command: `npm run build`
 - Output directory: `dist`
-- Environment variable: `VITE_API_BASE_URL=https://YOUR-RENDER-SERVICE.onrender.com/api`
+- Environment variable: `VITE_API_BASE_URL=https://portfolio-8rom.onrender.com/api`
 
-The included `frontend/vercel.json` proxies same-origin `/api/*` requests to `https://portfolio-8rom.onrender.com/api/*`. The backend also permits HTTPS Vercel deployment origins through `CORS_ALLOWED_ORIGIN_PATTERNS`. For a custom non-Vercel domain, add its exact origin to Render's `CORS_ALLOWED_ORIGINS`, without a trailing slash. Multiple origins are comma-separated.
+`VITE_API_BASE_URL` is injected into the frontend at build time. After adding or changing it in Vercel, redeploy the frontend; changing the value without a new deployment does not update an existing JavaScript bundle. With the value above, the browser calls Render directly, for example `https://portfolio-8rom.onrender.com/api/skills`.
+
+The backend permits HTTPS Vercel deployment origins through `CORS_ALLOWED_ORIGIN_PATTERNS`. For a custom non-Vercel domain, add its exact origin to Render's `CORS_ALLOWED_ORIGINS`, without a trailing slash. Multiple origins are comma-separated.
 
 ## Local Docker verification
 
