@@ -1,5 +1,7 @@
 {
+  "version": 1,
   "profile": {
+    "id": 1,
     "name": "Barath Elumalai",
     "title": "Software Developer",
     "location": "Chennai, TN",
@@ -9,21 +11,56 @@
     "linkedin": "https://www.linkedin.com/in/barath-e",
     "summary": "Results-driven Software Engineer with 4.5+ years of experience building scalable, high-performance systems using Java, Spring Boot, and microservice architecture. Skilled in API development, cloud integration (AWS), and event-driven solutions with Kafka, along with hands-on expertise in PostgreSQL, MongoDB, Redis, and Elasticsearch. I have worked on projects involving client requirement analysis, solution delivery, and business process support, which strengthened my domain knowledge, problem-solving, collaboration, and communication skills. Always eager to learn new technologies and contribute effectively to organizational success."
   },
-  "skills": {
-    "Languages": ["Java (8+)", "TypeScript", "JavaScript", "Python", "C/C++", "SQL"],
-    "Frameworks": ["Spring Boot", "Spring MVC", "Spring Data JPA", "Spring Security", "Spring Cloud", "Angular", "NestJS", "NodeJS", "TypeORM"],
-    "Databases": ["Redis", "MongoDB", "MySQL", "PostgreSQL", "Hibernate", "Elasticsearch", "Cassandra"],
-    "Cloud & Services": ["AWS Lambda", "S3", "SQS", "SNS", "SES", "IAM", "DynamoDB", "API Gateway", "Docker", "CI/CD"],
-    "Architecture": ["Microservices", "Cloud Based", "Security Best Practices", "System Monitoring"],
-    "Tools": ["Kafka", "Git", "Docker Compose", "Confluence", "Swagger"]
-  },
+  "skills": [
+    { "id": 1, "name": "Java (8+)", "category": "Languages" },
+    { "id": 2, "name": "TypeScript", "category": "Languages" },
+    { "id": 3, "name": "JavaScript", "category": "Languages" },
+    { "id": 4, "name": "Python", "category": "Languages" },
+    { "id": 5, "name": "C/C++", "category": "Languages" },
+    { "id": 6, "name": "SQL", "category": "Languages" },
+    { "id": 7, "name": "Spring Boot", "category": "Frameworks" },
+    { "id": 8, "name": "Spring MVC", "category": "Frameworks" },
+    { "id": 9, "name": "Spring Data JPA", "category": "Frameworks" },
+    { "id": 10, "name": "Spring Security", "category": "Frameworks" },
+    { "id": 11, "name": "Spring Cloud", "category": "Frameworks" },
+    { "id": 12, "name": "Angular", "category": "Frameworks" },
+    { "id": 13, "name": "NestJS", "category": "Frameworks" },
+    { "id": 14, "name": "NodeJS", "category": "Frameworks" },
+    { "id": 15, "name": "TypeORM", "category": "Frameworks" },
+    { "id": 16, "name": "Redis", "category": "Databases" },
+    { "id": 17, "name": "MongoDB", "category": "Databases" },
+    { "id": 18, "name": "MySQL", "category": "Databases" },
+    { "id": 19, "name": "PostgreSQL", "category": "Databases" },
+    { "id": 20, "name": "Hibernate", "category": "Databases" },
+    { "id": 21, "name": "Elasticsearch", "category": "Databases" },
+    { "id": 22, "name": "Cassandra", "category": "Databases" },
+    { "id": 23, "name": "AWS Lambda", "category": "Cloud & Services" },
+    { "id": 24, "name": "S3", "category": "Cloud & Services" },
+    { "id": 25, "name": "SQS", "category": "Cloud & Services" },
+    { "id": 26, "name": "SNS", "category": "Cloud & Services" },
+    { "id": 27, "name": "SES", "category": "Cloud & Services" },
+    { "id": 28, "name": "IAM", "category": "Cloud & Services" },
+    { "id": 29, "name": "DynamoDB", "category": "Cloud & Services" },
+    { "id": 30, "name": "API Gateway", "category": "Cloud & Services" },
+    { "id": 31, "name": "Docker", "category": "Cloud & Services" },
+    { "id": 32, "name": "CI/CD", "category": "Cloud & Services" },
+    { "id": 33, "name": "Microservices", "category": "Architecture" },
+    { "id": 34, "name": "Cloud Based", "category": "Architecture" },
+    { "id": 35, "name": "Security Best Practices", "category": "Architecture" },
+    { "id": 36, "name": "System Monitoring", "category": "Architecture" },
+    { "id": 37, "name": "Kafka", "category": "Tools" },
+    { "id": 38, "name": "Git", "category": "Tools" },
+    { "id": 39, "name": "Docker Compose", "category": "Tools" },
+    { "id": 40, "name": "Confluence", "category": "Tools" },
+    { "id": 41, "name": "Swagger", "category": "Tools" }
+  ],
   "projects": [
     {
+      "id": 1,
       "name": "Glasscase BGV Platform",
-      "companyId": 3,
       "description": "Automated document validation, improved backend stability, and delivered audit-ready systems in an Agile environment",
       "techStack": "Python, Groovy, Java, Grails, MySQL, PostgreSQL",
-      "highlights": [
+      "highlight": [
         "Built an automated document insufficiency validation module with OCR-based checks, real-time error detection, and user-friendly remediation UI, reducing manual review efforts",
         "Improved production stability through robust exception handling, rollback mechanisms, and optimized DB connection pooling",
         "Created ISO-compliant SDLC documentation, including schemas, workflows, and API specs for audit readiness",
@@ -33,11 +70,11 @@
       "liveDemoUrl": "https://demo.meta-path.ai/home/login"
     },
     {
+      "id": 2,
       "name": "Cloud API Integration",
-      "companyId": 2,
       "description": "Automated Box-to-S3/DynamoDB migration using AWS Lambda, handling API limits with retries, Kafka pipelines, Redis caching, SES notifications",
       "techStack": "Java, NestJS, DynamoDB, AWS, CI/CD, BoxDev",
-      "highlights": [
+      "highlight": [
         "Developed AWS Lambda functions to automate Box-to-S3/DynamoDB content migration, reducing manual intervention by 50% and preserving historical file versions",
         "Addressed API pagination and rate limits; implemented exponential backoff and retry jitter for error-resilient data transfer",
         "Designed event-driven microservices and pipelines using Kafka, integrating Redis for caching and session control",
@@ -47,11 +84,11 @@
       "liveDemoUrl": "https://developer.box.com"
     },
     {
+      "id": 3,
       "name": "Automotive Retail SaaS Platform",
-      "companyId": 2,
       "description": "Developed a bulk inventory syndication system with audit logging, marketing pages, and PDF generation. Built wrapper APIs for vehicle data management and access control, documented processes in Confluence, and delivered under agile methodology using MongoDB and Elasticsearch for scalable, high-speed data handling",
       "techStack": "Java, Spring Boot, MongoDB, Elasticsearch, Confluence, Redis, Jenkins",
-      "highlights": [
+      "highlight": [
         "Implemented bulk inventory syndication, audit logging, marketing pages, and PDF generation",
         "Built wrapper APIs to update bulk vehicle data and manage path permissions",
         "Documented assigned tickets and technical details in Confluence for efficient tracking",
@@ -60,11 +97,11 @@
       "liveDemoUrl": "https://tekion.com/request-demo"
     },
     {
+      "id": 4,
       "name": "E-Learning Platform",
-      "companyId": 2,
       "description": "Integrated ChatGPT for dynamic lesson and quiz generation",
       "techStack": "Java, Vert.x, Kafka, Elasticsearch, PostgreSQL",
-      "highlights": [
+      "highlight": [
         "Integrated ChatGPT (Davinci-2) for dynamic lesson and quiz generation",
         "Implemented Elasticsearch-backed search API (~30% faster)",
         "Enabled multi-tenant support with real-time learner progress syncing via Kafka"
@@ -72,11 +109,11 @@
       "liveDemoUrl": "https://demo.gooru.org/login"
     },
     {
+      "id": 5,
       "name": "Workforce Management App",
-      "companyId": 2,
       "description": "Full timesheet module and microservices refactoring",
       "techStack": "NodeJS, Redis, PostgreSQL",
-      "highlights": [
+      "highlight": [
         "Built JWT authentication with Redis-based session control",
         "Developed full Timesheet module (creation, submission, approvals, reporting)",
         "Refactored backend services into microservices",
@@ -85,11 +122,11 @@
       "liveDemoUrl": "https://hris.cloudripples.io"
     },
     {
+      "id": 6,
       "name": "Business Auditing Tool",
-      "companyId": 1,
       "description": "Built a high-performance Java auditing tool with 2FA, LDAP/Active Directory integration, responsive UIs, and PostgreSQL/MySQL backend for efficient mailbox and traffic reporting",
       "techStack": "Java, Spring Boot, MongoDB, Elasticsearch, MySQL, JNDI, Active Directory",
-      "highlights": [
+      "highlight": [
         "Implemented two-factor authentication and LDAP-based audit reporting (mailbox usage, traffic)",
         "Developed Java apps capable of high-volume processing with low latency",
         "Built responsive UIs and utilized JNI to connect with Active Directory for user data retrieval",
@@ -99,49 +136,14 @@
     }
   ],
   "experiences": [
-    {
-      "id": 4,
-      "company": "PickYourTrail",
-      "duration": "02/2026 - Present",
-      "role": "Software Development Engineer 2"
-    },
-    {
-      "id": 3,
-      "company": "Pyramidions Metapath Solutions",
-      "duration": "10/2025 - 12/2025",
-      "role": "Deputy Manager"
-    },
-    {
-      "id": 2,
-      "company": "Cloud Ripples Private Limited",
-      "duration": "11/2022 - 10/2025",
-      "role": "Software Developer"
-    },
-    {
-      "id": 1,
-      "company": "Zoho Corporation Private Limited",
-      "duration": "06/2021 - 09/2022",
-      "role": "Member Technical Staff"
-    }
+    { "id": 4, "company": "PickYourTrail", "duration": "02/2026 - Present", "role": "Software Development Engineer 2", "projectIds": [] },
+    { "id": 3, "company": "Pyramidions Metapath Solutions", "duration": "10/2025 - 12/2025", "role": "Deputy Manager", "projectIds": [1] },
+    { "id": 2, "company": "Cloud Ripples Private Limited", "duration": "11/2022 - 10/2025", "role": "Software Developer", "projectIds": [2, 3, 4, 5] },
+    { "id": 1, "company": "Zoho Corporation Private Limited", "duration": "06/2021 - 09/2022", "role": "Member Technical Staff", "projectIds": [6] }
   ],
   "education": [
-    {
-      "institute": "RMK Engineering College",
-      "duration": "08/2017 - 03/2021",
-      "degree": "Bachelor of Engineering, Electrical & Electronics",
-      "cgpa": "8.42"
-    },
-    {
-      "institute": "Velammal Matric Higher Secondary School",
-      "duration": "07/2016 - 03/2017",
-      "percentage": "83.83%",
-      "board": "State Board of School Examinations, TN"
-    },
-    {
-      "institute": "Velammal Vidhyashram",
-      "duration": "07/2014 - 03/2015",
-      "cgpa": "8.8",
-      "board": "Central Board of Secondary Education"
-    }
+    { "id": 1, "institute": "RMK Engineering College", "duration": "08/2017 - 03/2021", "degree": "Bachelor of Engineering, Electrical & Electronics", "cgpa": 8.42 },
+    { "id": 2, "institute": "Velammal Matric Higher Secondary School", "duration": "07/2016 - 03/2017", "degree": "Higher Secondary Education", "percentage": "83.83%", "board": "State Board of School Examinations, TN" },
+    { "id": 3, "institute": "Velammal Vidhyashram", "duration": "07/2014 - 03/2015", "degree": "Secondary Education", "cgpa": 8.8, "board": "Central Board of Secondary Education" }
   ]
 }

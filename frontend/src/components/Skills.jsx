@@ -1,119 +1,46 @@
-import React, { useEffect } from 'react';
-import { Code2, Database, Cloud, Cpu } from 'lucide-react';
-import AOS from 'aos';
+import React from 'react';
+import { Braces, CloudCog, CodeXml, Database, GitBranch, Waypoints } from 'lucide-react';
 
-/**
- * Skills Component - Modern skill showcase with categories
- */
+const iconMap = {
+  Languages: CodeXml,
+  Frameworks: Braces,
+  Databases: Database,
+  'Cloud & Services': CloudCog,
+  Architecture: Waypoints,
+  Tools: GitBranch,
+};
+
 const Skills = React.memo(({ skills }) => {
-  useEffect(() => {
-    AOS.init({ duration: 1000 });
-  }, []);
-
-  if (!skills || skills.length === 0) return null;
-
-  // Group skills by category
-  const groupedSkills = skills.reduce((acc, skill) => {
+  if (!skills?.length) return null;
+  const groups = skills.reduce((result, skill) => {
     const category = skill.category || 'Other';
-    if (!acc[category]) {
-      acc[category] = [];
-    }
-    acc[category].push(skill);
-    return acc;
+    result[category] = [...(result[category] || []), skill];
+    return result;
   }, {});
 
-  // Icon mapping for categories
-  const categoryIcons = {
-    'Languages': Code2,
-    'Frameworks': Cpu,
-    'Databases': Database,
-    'Cloud & Services': Cloud,
-    'Architecture': Cpu,
-    'Tools': Code2,
-  };
-
-  const categoryColors = {
-    'Languages': 'from-blue-500 to-cyan-500',
-    'Frameworks': 'from-purple-500 to-pink-500',
-    'Databases': 'from-green-500 to-emerald-500',
-    'Cloud & Services': 'from-orange-500 to-red-500',
-    'Architecture': 'from-indigo-500 to-purple-500',
-    'Tools': 'from-yellow-500 to-orange-500',
-  };
-
   return (
-    <section id="skills" className="section-container bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800">
-      <div className="max-w-6xl mx-auto">
-        {/* Section Header */}
-        <div data-aos="fade-up">
-          <h2 className="section-title">Technical Skills</h2>
-          <p className="section-subtitle">
-            Technologies and tools I work with to build amazing products
-          </p>
+    <section id="skills" className="relative overflow-hidden bg-slate-950 text-white">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(37,99,235,0.28),transparent_36%),radial-gradient(circle_at_15%_80%,rgba(234,88,12,0.13),transparent_30%)]" aria-hidden="true" />
+      <div className="section-shell relative">
+        <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
+          <div data-aos="fade-up"><p className="section-kicker !text-blue-300">Technical toolkit</p><h2 className="section-heading !text-white">A versatile stack for modern product engineering.</h2></div>
+          <p className="max-w-xl text-base leading-8 text-slate-300" data-aos="fade-up">From typed backend services to cloud-native infrastructure, I choose tools that make systems easier to evolve and operate.</p>
         </div>
-
-        {/* Skills Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
-          {Object.entries(groupedSkills).map(([category, categorySkills], index) => {
-            const Icon = categoryIcons[category] || Code2;
-            const colorClass = categoryColors[category] || 'from-gray-500 to-gray-600';
-            
+        <div className="mt-14 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {Object.entries(groups).map(([category, categorySkills], index) => {
+            const Icon = iconMap[category] || CodeXml;
             return (
-              <div
-                key={category}
-                className="glass-card p-6 card-hover-effect"
-                data-aos="fade-up"
-                data-aos-delay={index * 100}
-              >
-                {/* Category Header */}
-                <div className="flex items-center gap-3 mb-6">
-                  <div className={`w-12 h-12 bg-gradient-to-r ${colorClass} rounded-xl flex items-center justify-center`}>
-                    <Icon className="text-white" size={24} />
-                  </div>
-                  <h3 className="text-xl font-bold text-slate-900 dark:text-white">
-                    {category}
-                  </h3>
-                </div>
-
-                {/* Skills List */}
-                <div className="flex flex-wrap gap-2">
-                  {categorySkills.map((skill) => (
-                    <span
-                      key={skill.id}
-                      className="skill-badge-modern"
-                    >
-                      {skill.name}
-                    </span>
-                  ))}
-                </div>
-              </div>
+              <article key={category} className="rounded-[1.5rem] border border-white/10 bg-white/[0.06] p-6 backdrop-blur-sm transition duration-300 hover:border-blue-400/40 hover:bg-white/[0.09]" data-aos="fade-up" data-aos-delay={index * 60}>
+                <div className="flex items-center gap-4"><span className="grid h-12 w-12 place-items-center rounded-xl border border-blue-400/20 bg-blue-500/15 text-blue-300"><Icon size={23} aria-hidden="true" /></span><h3 className="text-lg font-semibold text-white">{category}</h3></div>
+                <div className="mt-6 flex flex-wrap gap-2">{categorySkills.map((skill) => <span key={skill.id || skill.name} className="rounded-full border border-white/10 bg-white/[0.07] px-3 py-1.5 text-sm text-slate-200">{skill.name}</span>)}</div>
+              </article>
             );
           })}
         </div>
-
-        {/* Tech Stack Highlight
-        <div className="mt-12 text-center" data-aos="fade-up">
-          <div className="glass-card p-8 max-w-4xl mx-auto">
-            <h3 className="text-2xl font-bold gradient-text mb-4">Core Technologies</h3>
-            <div className="flex flex-wrap justify-center gap-3">
-              {['Java', 'Spring Boot', 'NodeJS', 'PostgreSQL', 'MongoDB', 'AWS'].map((tech, index) => (
-                <div
-                  key={tech}
-                  className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full font-semibold shadow-lg hover:scale-110 transition-transform duration-300"
-                  data-aos="zoom-in"
-                  data-aos-delay={index * 50}
-                >
-                  {tech}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div> */}
       </div>
     </section>
   );
 });
 
 Skills.displayName = 'Skills';
-
 export default Skills;

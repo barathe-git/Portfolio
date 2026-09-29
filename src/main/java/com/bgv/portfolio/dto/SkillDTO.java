@@ -16,7 +16,6 @@ public class SkillDTO {
     @NotBlank(message = "Skill name is required")
     private String name;
 
-    @NotBlank(message = "Skill level is required")
     private String level;
 
     @NotBlank(message = "Skill category is required")

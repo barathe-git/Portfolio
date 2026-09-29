@@ -1,187 +1,64 @@
-import React, { useEffect, useState } from 'react';
-import { Github, Linkedin, Mail, MapPin, Phone, Download, ArrowRight } from 'lucide-react';
-import AOS from 'aos';
+import { useState } from 'react';
+import { ArrowDownRight, ArrowUpRight, BriefcaseBusiness, Download, Github, Linkedin, Mail, MapPin } from 'lucide-react';
 import DownloadModal from './DownloadModal';
 import { downloadCVAsPDF, downloadPortfolioAsCSV, downloadPortfolioAsJSON } from '../utils/downloadCV';
 
-/**
- * Hero Component - Modern, eye-catching landing section
- * Designed to impress HR and recruiters
- */
 const Hero = ({ profile, experiences, education, skills, projects }) => {
   const [showDownloadModal, setShowDownloadModal] = useState(false);
-
-  useEffect(() => {
-    AOS.init({ duration: 1000, once: true });
-  }, []);
-
-  const handleDownload = (format) => {
-    switch (format) {
-      case 'html':
-        downloadCVAsPDF(profile, experiences, education, skills, projects);
-        break;
-      case 'csv':
-        downloadPortfolioAsCSV(profile, experiences, education, skills, projects);
-        break;
-      case 'json':
-        downloadPortfolioAsJSON(profile, experiences, education, skills, projects);
-        break;
-      default:
-        break;
-    }
-  };
-
   if (!profile) return null;
 
+  const handleDownload = (format) => {
+    if (format === 'html') downloadCVAsPDF(profile, experiences, education, skills, projects);
+    if (format === 'csv') downloadPortfolioAsCSV(profile, experiences, education, skills, projects);
+    if (format === 'json') downloadPortfolioAsJSON(profile, experiences, education, skills, projects);
+  };
+
+  const metrics = [
+    { value: '4.5+', label: 'Years building products' },
+    { value: `${projects?.length || 6}`, label: 'Selected case studies' },
+    { value: `${experiences?.length || 4}`, label: 'Teams and companies' },
+  ];
+
   return (
-    <section id="home" className="min-h-screen flex items-center relative overflow-hidden">
-      {/* Animated Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 animate-gradient-x"></div>
-      
-      {/* Decorative Elements */}
-      <div className="absolute top-20 left-10 w-72 h-72 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
-      <div className="absolute bottom-20 right-10 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-      
-      {/* Content */}
-      <div className="section-container relative z-10">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            
-            {/* Left Column - Text Content */}
-            <div className="text-white space-y-6" data-aos="fade-right">
-              <div className="inline-block">
-                <span className="px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium border border-white/30">
-                  👋 Welcome to my portfolio
-                </span>
-              </div>
-              
-              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight">
-                Hi, I'm{' '}
-                <span className="text-shadow inline-block animate-float">
-                  {profile.name}
-                </span>
-              </h1>
-              
-              <h2 className="text-2xl md:text-3xl font-medium text-blue-100">
-                {profile.title}
-              </h2>
-              
-              <p className="text-lg text-blue-50 leading-relaxed max-w-xl">
-                {profile.summary?.substring(0, 150)}...
-              </p>
-              
-              {/* Contact Info */}
-              <div className="flex flex-wrap gap-4 text-sm text-blue-100">
-                {profile.location && (
-                  <div className="flex items-center gap-2">
-                    <MapPin size={18} />
-                    <span>{profile.location}</span>
-                  </div>
-                )}
-                {profile.email && (
-                  <div className="flex items-center gap-2">
-                    <Mail size={18} />
-                    <span>{profile.email}</span>
-                  </div>
-                )}
-              </div>
-              
-              {/* Action Buttons */}
-              <div className="flex flex-wrap gap-4 pt-4">
-                <a href="#projects" className="btn-modern group">
-                  View My Work
-                  <ArrowRight className="inline-block ml-2 group-hover:translate-x-1 transition-transform" size={20} />
-                </a>
-                <button 
-                  onClick={() => setShowDownloadModal(true)}
-                  className="px-8 py-3 rounded-full font-semibold bg-white/10 backdrop-blur-sm border border-white/30 text-white hover:bg-white/20 transition-all duration-300 flex items-center gap-2"
-                >
-                  <Download size={20} />
-                  Download CV
-                </button>
-              </div>
-              
-              {/* Social Links */}
-              <div className="flex gap-4 pt-4">
-                {profile.github && (
-                  <a
-                    href={profile.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="social-icon"
-                  >
-                    <Github size={24} />
-                  </a>
-                )}
-                {profile.linkedin && (
-                  <a
-                    href={profile.linkedin}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="social-icon"
-                  >
-                    <Linkedin size={24} />
-                  </a>
-                )}
-                {profile.email && (
-                  <a
-                    href={`mailto:${profile.email}`}
-                    className="social-icon"
-                  >
-                    <Mail size={24} />
-                  </a>
-                )}
-              </div>
-            </div>
-            
-            {/* Right Column - Profile Image */}
-            <div className="flex justify-center" data-aos="fade-left">
-              <div className="relative">
-                {/* Glow Effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-600 rounded-full blur-2xl opacity-50 animate-pulse"></div>
-                
-                {/* Profile Image */}
-                <img 
-                  src="/profile.jpg" 
-                  alt={profile.name} 
-                  className="relative w-64 h-64 md:w-80 md:h-80 rounded-full object-cover border-8 border-white/30 shadow-2xl animate-float"
-                  onError={(e) => {
-                    e.target.style.display = 'none';
-                    e.target.nextSibling.style.display = 'flex';
-                  }}
-                />
-                
-                {/* Fallback Avatar */}
-                <div className="hidden relative w-64 h-64 md:w-80 md:h-80 rounded-full bg-gradient-to-br from-blue-400 to-purple-600 items-center justify-center text-white text-8xl font-bold border-8 border-white/30 shadow-2xl animate-float">
-                  {profile.name?.charAt(0)}
-                </div>
-                
-                {/* Floating Badges */}
-                <div className="absolute -top-4 -right-4 px-4 py-2 bg-white rounded-full shadow-lg animate-bounce">
-                  <span className="text-2xl">💼</span>
-                </div>
-                <div className="absolute -bottom-4 -left-4 px-4 py-2 bg-white rounded-full shadow-lg animate-bounce delay-300">
-                  <span className="text-2xl">🚀</span>
-                </div>
-              </div>
-            </div>
+    <section id="home" className="relative min-h-screen overflow-hidden pt-28 sm:pt-32">
+      <div className="hero-grid absolute inset-0" aria-hidden="true" />
+      <div className="absolute -left-40 top-28 h-96 w-96 rounded-full bg-blue-200/50 blur-3xl" aria-hidden="true" />
+      <div className="absolute -right-28 top-16 h-80 w-80 rounded-full bg-orange-100/70 blur-3xl" aria-hidden="true" />
+      <div className="page-shell relative z-10 grid min-h-[calc(100vh-7rem)] items-center gap-14 pb-20 lg:grid-cols-[1.1fr_0.9fr] lg:gap-20">
+        <div data-aos="fade-up">
+          <div className="mb-7 inline-flex items-center gap-3 rounded-full border border-blue-200 bg-white/75 px-4 py-2 text-sm font-bold text-blue-900 backdrop-blur-md">
+            <span className="relative flex h-2.5 w-2.5" aria-hidden="true"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" /><span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" /></span>
+            Software engineer based in Chennai
+          </div>
+          <h1 className="max-w-4xl text-5xl font-semibold leading-[1.06] text-slate-950 sm:text-6xl lg:text-7xl xl:text-[5.25rem]">I build reliable systems that make complex work feel <span className="text-blue-700">simple.</span></h1>
+          <p className="mt-7 max-w-2xl text-lg leading-8 text-slate-600 sm:text-xl">{profile.title} focused on scalable Java, Spring Boot, cloud integrations, and event-driven products that perform beautifully under real-world pressure.</p>
+          <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+            <a href="#projects" className="button-primary">Explore selected work <ArrowDownRight size={18} aria-hidden="true" /></a>
+            <button type="button" onClick={() => setShowDownloadModal(true)} className="button-secondary"><Download size={18} aria-hidden="true" /> Download résumé</button>
+          </div>
+          <div className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm font-semibold text-slate-600">
+            {profile.location && <span className="flex items-center gap-2"><MapPin size={17} className="text-blue-700" aria-hidden="true" />{profile.location}</span>}
+            {profile.email && <a href={`mailto:${profile.email}`} className="flex min-h-11 items-center gap-2 transition hover:text-blue-700"><Mail size={17} className="text-blue-700" aria-hidden="true" />{profile.email}</a>}
+          </div>
+          <div className="mt-8 flex gap-3">
+            {profile.github && <a href={profile.github} target="_blank" rel="noopener noreferrer" className="icon-button" aria-label="GitHub profile"><Github size={20} aria-hidden="true" /></a>}
+            {profile.linkedin && <a href={profile.linkedin} target="_blank" rel="noopener noreferrer" className="icon-button" aria-label="LinkedIn profile"><Linkedin size={20} aria-hidden="true" /></a>}
           </div>
         </div>
-      </div>
-      
-      {/* Scroll Indicator */}
-      <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
-        <div className="w-6 h-10 border-2 border-white/50 rounded-full flex justify-center pt-2">
-          <div className="w-1 h-3 bg-white rounded-full animate-pulse"></div>
+        <div className="relative mx-auto w-full max-w-lg" data-aos="fade-up" data-aos-delay="100">
+          <div className="absolute -inset-5 rotate-3 rounded-[2.5rem] bg-blue-700" aria-hidden="true" />
+          <div className="relative overflow-hidden rounded-[2.25rem] border-8 border-white bg-slate-200 shadow-2xl shadow-blue-950/20">
+            <img src="/profile.jpg" alt={`${profile.name}, ${profile.title}`} width="640" height="760" className="aspect-[4/5] w-full object-cover object-top" />
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-transparent p-7 pt-24 text-white"><p className="font-heading text-2xl font-semibold">{profile.name}</p><p className="mt-1 text-sm text-slate-200">{profile.title}</p></div>
+          </div>
+          <div className="metric-card gentle-float absolute -left-5 top-10 hidden items-center gap-3 sm:flex"><span className="grid h-11 w-11 place-items-center rounded-xl bg-orange-100 text-orange-700"><BriefcaseBusiness size={21} aria-hidden="true" /></span><span><strong className="block font-heading text-sm text-slate-900">SDE II</strong><small className="text-slate-500">Product engineering</small></span></div>
+          <a href="#experience" className="metric-card absolute -bottom-6 right-3 flex min-h-12 items-center gap-3 text-sm font-bold text-slate-800 transition hover:text-blue-700">View my journey <ArrowUpRight size={17} aria-hidden="true" /></a>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-3 lg:col-span-2" data-aos="fade-up">
+          {metrics.map((metric) => <div key={metric.label} className="rounded-2xl border border-slate-200/80 bg-white/70 px-6 py-5 backdrop-blur-md"><p className="font-heading text-2xl font-semibold text-slate-950">{metric.value}</p><p className="mt-1 text-sm text-slate-500">{metric.label}</p></div>)}
         </div>
       </div>
-
-      {/* Download Modal */}
-      <DownloadModal
-        isOpen={showDownloadModal}
-        onClose={() => setShowDownloadModal(false)}
-        onDownload={handleDownload}
-      />
+      <DownloadModal isOpen={showDownloadModal} onClose={() => setShowDownloadModal(false)} onDownload={handleDownload} />
     </section>
   );
 };

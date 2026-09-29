@@ -1,341 +1,305 @@
 package com.bgv.portfolio.service;
 
-import com.bgv.portfolio.dto.*;
+import com.bgv.portfolio.dto.EducationDTO;
+import com.bgv.portfolio.dto.ExperienceDTO;
+import com.bgv.portfolio.dto.ProfileDTO;
+import com.bgv.portfolio.dto.ProjectDTO;
+import com.bgv.portfolio.dto.SkillDTO;
 import com.bgv.portfolio.exception.ResourceNotFoundException;
-import com.bgv.portfolio.model.*;
-import com.bgv.portfolio.repository.*;
+import com.bgv.portfolio.storage.JsonPortfolioStore;
+import com.bgv.portfolio.storage.PortfolioDocument;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.ToLongFunction;
 
+/** Portfolio CRUD backed by a single versioned JSON document. */
 @Service
 @RequiredArgsConstructor
-@Transactional
-@Slf4j
 public class PortfolioService {
 
-    private final ProfileRepository profileRepository;
-    private final SkillRepository skillRepository;
-    private final ProjectRepository projectRepository;
-    private final ExperienceRepository experienceRepository;
-    private final EducationRepository educationRepository;
+    private final JsonPortfolioStore store;
 
-    // ---------------- Public ----------------
-
-    @Transactional(readOnly = true)
     public ProfileDTO getProfile() {
-        log.debug("Fetching profile from database");
-        Profile profile = profileRepository.findAll().stream().findFirst()
-                .orElseThrow(() -> new ResourceNotFoundException("Profile not found"));
-        return mapToDTO(profile);
+        return store.read(document -> profileWithRelations(document, document.getProfile()));
     }
 
-    @Transactional(readOnly = true)
     public ProfileDTO getProfileById(Long id) {
-        log.debug("Fetching profile with id: {}" , id);
-        Profile profile = profileRepository.findByIdWithEagerLoading(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Profile not found with id: " + id));
-        return mapToDTO(profile);
+        return store.read(document -> {
+            if (!document.getProfile().getId().equals(id)) {
+                throw notFound("Profile", id);
+            }
+            return profileWithRelations(document, document.getProfile());
+        });
     }
 
-    @Transactional(readOnly = true)
     public List<SkillDTO> getSkills() {
-        log.debug("Fetching all skills from database");
-        return skillRepository.findAll().stream()
-                .map(this::mapToDTO)
-                .collect(Collectors.toList());
+        return store.read(document -> document.getSkills().stream().map(this::copySkill).toList());
     }
 
-    @Transactional(readOnly = true)
     public List<ProjectDTO> getProjects() {
-        log.debug("Fetching all projects from database");
-        return projectRepository.findAll().stream()
-                .map(this::mapToDTO)
-                .collect(Collectors.toList());
+        return store.read(document -> document.getProjects().stream().map(this::copyProject).toList());
     }
 
-    @Transactional(readOnly = true)
     public List<ExperienceDTO> getExperiences() {
-        log.debug("Fetching all experiences from database");
-        return experienceRepository.findAllWithEagerProjects().stream()
-                .map(this::mapToDTO)
-                .collect(Collectors.toList());
+        return store.read(document -> mapExperiences(document));
     }
 
-    @Transactional(readOnly = true)
     public List<EducationDTO> getEducation() {
-        log.debug("Fetching all education records from database");
-        return educationRepository.findAll().stream()
-                .map(this::mapToDTO)
-                .collect(Collectors.toList());
+        return store.read(document -> document.getEducation().stream().map(this::copyEducation).toList());
     }
 
-    // ---------------- Admin ----------------
-
-    @SuppressWarnings("null")
     public ProjectDTO addProject(ProjectDTO dto) {
-        log.info("Creating new project: {}", dto.getName());
-        Project project = Project.builder()
-                .name(dto.getName())
-                .description(dto.getDescription())
-                .githubUrl(dto.getGithubUrl())
-                .techStack(dto.getTechStack())
-                .highlight(dto.getHighlight())
-                .liveDemoUrl(dto.getLiveDemoUrl())
-                .build();
-        Project saved = projectRepository.save(project);
-        log.info("Project created successfully with id: {}", saved != null ? saved.getId() : null);
-        return saved != null ? mapToDTO(saved) : null;
+        ProjectDTO saved = store.write(document -> {
+            ProjectDTO project = copyProject(dto);
+            project.setId(nextId(document.getProjects(), ProjectDTO::getId));
+            document.getProjects().add(project);
+            return project;
+        });
+        return copyProject(saved);
     }
 
     public ProfileDTO updateProfile(Long id, ProfileDTO dto) {
-        log.info("Updating profile with id: {}", id);
-        if (id == null) {
-            throw new IllegalArgumentException("Profile id cannot be null");
-        }
-        Profile profile = profileRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Profile not found with id: " + id));
-        profile.setName(dto.getName());
-        profile.setTitle(dto.getTitle());
-        profile.setSummary(dto.getSummary());
-        profile.setLocation(dto.getLocation());
-        profile.setEmail(dto.getEmail());
-        profile.setLinkedin(dto.getLinkedin());
-        profile.setGithub(dto.getGithub());
-        profile.setPhone(dto.getPhone());
-        profileRepository.save(profile);
-        log.info("Profile updated successfully");
-        return mapToDTO(profile);
+        ProfileDTO saved = store.write(document -> {
+            ProfileDTO current = document.getProfile();
+            if (id == null || !current.getId().equals(id)) {
+                throw notFound("Profile", id);
+            }
+            ProfileDTO updated = copyProfile(dto);
+            updated.setId(id);
+            document.setProfile(updated);
+            return updated;
+        });
+        return store.read(document -> profileWithRelations(document, saved));
     }
 
     public void deleteSkill(Long id) {
-        log.info("Deleting skill with id: {}", id);
-        if (id == null || !skillRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Skill not found with id: " + id);
-        }
-        skillRepository.deleteById(id);
-        log.info("Skill deleted successfully");
+        store.write(document -> {
+            boolean removed = document.getSkills().removeIf(skill -> skill.getId().equals(id));
+            if (!removed) throw notFound("Skill", id);
+            return null;
+        });
     }
 
-    // -------- Additional CRUD Operations --------
-
-    @Transactional(readOnly = true)
     public ProjectDTO getProjectById(Long id) {
-        log.debug("Fetching project with id: {}", id);
-        Project project = projectRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Project not found with id: " + id));
-        return mapToDTO(project);
+        return store.read(document -> copyProject(findProject(document, id)));
     }
 
     public ProjectDTO updateProject(Long id, ProjectDTO dto) {
-        log.info("Updating project with id: {}", id);
-        Project project = projectRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Project not found with id: " + id));
-        project.setName(dto.getName());
-        project.setDescription(dto.getDescription());
-        project.setGithubUrl(dto.getGithubUrl());
-        project.setTechStack(dto.getTechStack());
-        project.setHighlight(dto.getHighlight());
-        project.setLiveDemoUrl(dto.getLiveDemoUrl());
-        projectRepository.save(project);
-        log.info("Project updated successfully");
-        return mapToDTO(project);
+        ProjectDTO saved = store.write(document -> {
+            int index = indexOf(document.getProjects(), id, ProjectDTO::getId, "Project");
+            ProjectDTO updated = copyProject(dto);
+            updated.setId(id);
+            document.getProjects().set(index, updated);
+            return updated;
+        });
+        return copyProject(saved);
     }
 
     public void deleteProject(Long id) {
-        log.info("Deleting project with id: {}", id);
-        if (id == null || !projectRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Project not found with id: " + id);
-        }
-        projectRepository.deleteById(id);
-        log.info("Project deleted successfully");
+        store.write(document -> {
+            boolean removed = document.getProjects().removeIf(project -> project.getId().equals(id));
+            if (!removed) throw notFound("Project", id);
+            document.getExperiences().forEach(experience -> experience.getProjectIds().remove(id));
+            return null;
+        });
     }
 
-    @Transactional(readOnly = true)
     public ExperienceDTO getExperienceById(Long id) {
-        log.debug("Fetching experience with id: {}", id);
-        Experience experience = experienceRepository.findByIdWithEagerProjects(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Experience not found with id: " + id));
-        return mapToDTO(experience);
+        return store.read(document -> mapExperience(document, findExperience(document, id)));
     }
 
     public ExperienceDTO addExperience(ExperienceDTO dto) {
-        log.info("Creating new experience: {}", dto.getCompany());
-        Experience experience = Experience.builder()
-                .company(dto.getCompany())
-                .role(dto.getRole())
-                .duration(dto.getDuration())
-                .description(dto.getDescription())
-                .build();
-        Experience saved = experienceRepository.save(experience);
-        log.info("Experience created successfully with id: {}", saved.getId());
-        return mapToDTO(saved);
+        Long id = store.write(document -> {
+            PortfolioDocument.ExperienceRecord record = toRecord(document, dto);
+            record.setId(nextId(document.getExperiences(), PortfolioDocument.ExperienceRecord::getId));
+            document.getExperiences().add(record);
+            return record.getId();
+        });
+        return getExperienceById(id);
     }
 
     public ExperienceDTO updateExperience(Long id, ExperienceDTO dto) {
-        log.info("Updating experience with id: {}", id);
-        Experience experience = experienceRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Experience not found with id: " + id));
-        experience.setCompany(dto.getCompany());
-        experience.setRole(dto.getRole());
-        experience.setDuration(dto.getDuration());
-        experience.setDescription(dto.getDescription());
-        experienceRepository.save(experience);
-        log.info("Experience updated successfully");
-        return mapToDTO(experience);
+        store.write(document -> {
+            int index = indexOf(document.getExperiences(), id, PortfolioDocument.ExperienceRecord::getId, "Experience");
+            PortfolioDocument.ExperienceRecord updated = toRecord(document, dto);
+            updated.setId(id);
+            document.getExperiences().set(index, updated);
+            return null;
+        });
+        return getExperienceById(id);
     }
 
     public void deleteExperience(Long id) {
-        log.info("Deleting experience with id: {}", id);
-        if (id == null || !experienceRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Experience not found with id: " + id);
-        }
-        experienceRepository.deleteById(id);
-        log.info("Experience deleted successfully");
+        store.write(document -> {
+            boolean removed = document.getExperiences().removeIf(experience -> experience.getId().equals(id));
+            if (!removed) throw notFound("Experience", id);
+            return null;
+        });
     }
 
-    @Transactional(readOnly = true)
     public EducationDTO getEducationById(Long id) {
-        log.debug("Fetching education with id: {}", id);
-        Education education = educationRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Education not found with id: " + id));
-        return mapToDTO(education);
+        return store.read(document -> copyEducation(findEducation(document, id)));
     }
 
     public EducationDTO addEducation(EducationDTO dto) {
-        log.info("Creating new education record: {}", dto.getInstitute());
-        Education education = Education.builder()
-                .institute(dto.getInstitute())
-                .degree(dto.getDegree())
-                .cgpa(dto.getCgpa())
-                .percentage(dto.getPercentage())
-                .board(dto.getBoard())
-                .duration(dto.getDuration())
-                .build();
-        Education saved = educationRepository.save(education);
-        log.info("Education record created successfully with id: {}", saved.getId());
-        return mapToDTO(saved);
+        EducationDTO saved = store.write(document -> {
+            EducationDTO education = copyEducation(dto);
+            education.setId(nextId(document.getEducation(), EducationDTO::getId));
+            document.getEducation().add(education);
+            return education;
+        });
+        return copyEducation(saved);
     }
 
     public EducationDTO updateEducation(Long id, EducationDTO dto) {
-        log.info("Updating education with id: {}", id);
-        Education education = educationRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Education not found with id: " + id));
-        education.setInstitute(dto.getInstitute());
-        education.setDegree(dto.getDegree());
-        education.setCgpa(dto.getCgpa());
-        education.setPercentage(dto.getPercentage());
-        education.setBoard(dto.getBoard());
-        education.setDuration(dto.getDuration());
-        educationRepository.save(education);
-        log.info("Education updated successfully");
-        return mapToDTO(education);
+        EducationDTO saved = store.write(document -> {
+            int index = indexOf(document.getEducation(), id, EducationDTO::getId, "Education");
+            EducationDTO updated = copyEducation(dto);
+            updated.setId(id);
+            document.getEducation().set(index, updated);
+            return updated;
+        });
+        return copyEducation(saved);
     }
 
     public void deleteEducation(Long id) {
-        log.info("Deleting education with id: {}", id);
-        if (id == null || !educationRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Education not found with id: " + id);
-        }
-        educationRepository.deleteById(id);
-        log.info("Education deleted successfully");
+        store.write(document -> {
+            boolean removed = document.getEducation().removeIf(education -> education.getId().equals(id));
+            if (!removed) throw notFound("Education", id);
+            return null;
+        });
     }
 
-    @Transactional(readOnly = true)
     public SkillDTO getSkillById(Long id) {
-        log.debug("Fetching skill with id: {}", id);
-        Skill skill = skillRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Skill not found with id: " + id));
-        return mapToDTO(skill);
+        return store.read(document -> copySkill(findSkill(document, id)));
     }
 
     public SkillDTO addSkill(SkillDTO dto) {
-        log.info("Creating new skill: {}", dto.getName());
-        Skill skill = Skill.builder()
-                .name(dto.getName())
-                .level(dto.getLevel())
-                .category(dto.getCategory())
-                .build();
-        Skill saved = skillRepository.save(skill);
-        log.info("Skill created successfully with id: {}", saved.getId());
-        return mapToDTO(saved);
+        SkillDTO saved = store.write(document -> {
+            SkillDTO skill = copySkill(dto);
+            skill.setId(nextId(document.getSkills(), SkillDTO::getId));
+            document.getSkills().add(skill);
+            return skill;
+        });
+        return copySkill(saved);
     }
 
     public SkillDTO updateSkill(Long id, SkillDTO dto) {
-        log.info("Updating skill with id: {}", id);
-        Skill skill = skillRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Skill not found with id: " + id));
-        skill.setName(dto.getName());
-        skill.setLevel(dto.getLevel());
-        skill.setCategory(dto.getCategory());
-        skillRepository.save(skill);
-        log.info("Skill updated successfully");
-        return mapToDTO(skill);
+        SkillDTO saved = store.write(document -> {
+            int index = indexOf(document.getSkills(), id, SkillDTO::getId, "Skill");
+            SkillDTO updated = copySkill(dto);
+            updated.setId(id);
+            document.getSkills().set(index, updated);
+            return updated;
+        });
+        return copySkill(saved);
     }
 
-    // ---------------- Mapping Helpers ----------------
-
-    private ProfileDTO mapToDTO(Profile profile) {
-        return ProfileDTO.builder()
-                .id(profile.getId())
-                .name(profile.getName())
-                .title(profile.getTitle())
-                .summary(profile.getSummary())
-                .location(profile.getLocation())
-                .email(profile.getEmail())
-                .phone(profile.getPhone())
-                .linkedin(profile.getLinkedin())
-                .github(profile.getGithub())
-                .experiences(profile.getExperiences().stream().map(this::mapToDTO).collect(Collectors.toList()))
-                .educationList(profile.getEducationList().stream().map(this::mapToDTO).collect(Collectors.toList()))
-                .build();
+    private ProfileDTO profileWithRelations(PortfolioDocument document, ProfileDTO source) {
+        ProfileDTO profile = copyProfile(source);
+        profile.setExperiences(mapExperiences(document));
+        profile.setEducationList(document.getEducation().stream().map(this::copyEducation).toList());
+        return profile;
     }
 
-    private SkillDTO mapToDTO(Skill skill) {
-        return SkillDTO.builder()
-                .id(skill.getId())
-                .name(skill.getName())
-                .level(skill.getLevel())
-                .category(skill.getCategory())
-                .build();
+    private List<ExperienceDTO> mapExperiences(PortfolioDocument document) {
+        return document.getExperiences().stream().map(record -> mapExperience(document, record)).toList();
     }
 
-    private ProjectDTO mapToDTO(Project project) {
-        return ProjectDTO.builder()
-                .id(project.getId())
-                .name(project.getName())
-                .description(project.getDescription())
-                .githubUrl(project.getGithubUrl())
-                .techStack(project.getTechStack())
-                .highlight(project.getHighlight())
-                .liveDemoUrl(project.getLiveDemoUrl())
-                .build();
-    }
-
-    private ExperienceDTO mapToDTO(Experience exp) {
+    private ExperienceDTO mapExperience(PortfolioDocument document, PortfolioDocument.ExperienceRecord record) {
+        Map<Long, ProjectDTO> projectsById = new LinkedHashMap<>();
+        document.getProjects().forEach(project -> projectsById.put(project.getId(), project));
+        Set<ProjectDTO> projects = new LinkedHashSet<>();
+        record.getProjectIds().forEach(projectId -> projects.add(copyProject(projectsById.get(projectId))));
         return ExperienceDTO.builder()
-                .id(exp.getId())
-                .company(exp.getCompany())
-                .role(exp.getRole())
-                .duration(exp.getDuration())
-                .description(exp.getDescription())
-                .projects(exp.getProjects().stream().map(this::mapToDTO).collect(Collectors.toSet()))
+                .id(record.getId())
+                .company(record.getCompany())
+                .role(record.getRole())
+                .duration(record.getDuration())
+                .description(record.getDescription())
+                .projects(projects)
                 .build();
     }
 
-    private EducationDTO mapToDTO(Education edu) {
-        return EducationDTO.builder()
-                .id(edu.getId())
-                .institute(edu.getInstitute())
-                .degree(edu.getDegree())
-                .cgpa(edu.getCgpa())
-                .percentage(edu.getPercentage())
-                .board(edu.getBoard())
-                .duration(edu.getDuration())
-                .build();
+    private PortfolioDocument.ExperienceRecord toRecord(PortfolioDocument document, ExperienceDTO dto) {
+        Set<Long> knownIds = new LinkedHashSet<>();
+        document.getProjects().forEach(project -> knownIds.add(project.getId()));
+        List<Long> projectIds = new ArrayList<>();
+        if (dto.getProjects() != null) {
+            for (ProjectDTO project : dto.getProjects()) {
+                if (project.getId() == null || !knownIds.contains(project.getId())) {
+                    throw new IllegalArgumentException("Experience references unknown project id: " + project.getId());
+                }
+                if (!projectIds.contains(project.getId())) projectIds.add(project.getId());
+            }
+        }
+        return new PortfolioDocument.ExperienceRecord(
+                dto.getId(), dto.getCompany(), dto.getRole(), dto.getDuration(), dto.getDescription(), projectIds);
+    }
+
+    private ProjectDTO findProject(PortfolioDocument document, Long id) {
+        return document.getProjects().stream().filter(item -> item.getId().equals(id)).findFirst()
+                .orElseThrow(() -> notFound("Project", id));
+    }
+
+    private PortfolioDocument.ExperienceRecord findExperience(PortfolioDocument document, Long id) {
+        return document.getExperiences().stream().filter(item -> item.getId().equals(id)).findFirst()
+                .orElseThrow(() -> notFound("Experience", id));
+    }
+
+    private EducationDTO findEducation(PortfolioDocument document, Long id) {
+        return document.getEducation().stream().filter(item -> item.getId().equals(id)).findFirst()
+                .orElseThrow(() -> notFound("Education", id));
+    }
+
+    private SkillDTO findSkill(PortfolioDocument document, Long id) {
+        return document.getSkills().stream().filter(item -> item.getId().equals(id)).findFirst()
+                .orElseThrow(() -> notFound("Skill", id));
+    }
+
+    private static <T> int indexOf(List<T> values, Long id, ToLongFunction<T> idExtractor, String type) {
+        for (int index = 0; index < values.size(); index++) {
+            if (id != null && idExtractor.applyAsLong(values.get(index)) == id.longValue()) return index;
+        }
+        throw notFound(type, id);
+    }
+
+    private static <T> long nextId(List<T> values, ToLongFunction<T> idExtractor) {
+        return values.stream().mapToLong(idExtractor).max().orElse(0L) + 1L;
+    }
+
+    private static ResourceNotFoundException notFound(String type, Long id) {
+        return new ResourceNotFoundException(type + " not found with id: " + id);
+    }
+
+    private ProfileDTO copyProfile(ProfileDTO source) {
+        return ProfileDTO.builder().id(source.getId()).name(source.getName()).email(source.getEmail())
+                .location(source.getLocation()).phone(source.getPhone()).summary(source.getSummary())
+                .title(source.getTitle()).github(source.getGithub()).linkedin(source.getLinkedin()).build();
+    }
+
+    private SkillDTO copySkill(SkillDTO source) {
+        return SkillDTO.builder().id(source.getId()).name(source.getName()).level(source.getLevel())
+                .category(source.getCategory()).build();
+    }
+
+    private ProjectDTO copyProject(ProjectDTO source) {
+        return ProjectDTO.builder().id(source.getId()).name(source.getName()).description(source.getDescription())
+                .githubUrl(source.getGithubUrl()).techStack(source.getTechStack())
+                .highlight(source.getHighlight() == null ? null : new ArrayList<>(source.getHighlight()))
+                .liveDemoUrl(source.getLiveDemoUrl()).build();
+    }
+
+    private EducationDTO copyEducation(EducationDTO source) {
+        return EducationDTO.builder().id(source.getId()).institute(source.getInstitute()).degree(source.getDegree())
+                .cgpa(source.getCgpa()).percentage(source.getPercentage()).board(source.getBoard())
+                .duration(source.getDuration()).build();
     }
 }
