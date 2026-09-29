@@ -89,6 +89,34 @@ These defaults are for local use only. Set a strong password before exposing the
 
 Stop either development server with `Ctrl+C` in its terminal.
 
+## Run and stop command reference
+
+Run each application in its own terminal:
+
+| Application | Run command | Normal stop command |
+|---|---|---|
+| Backend | `gradle bootRun` | Press `Ctrl+C` in the backend terminal |
+| Frontend | `cd frontend && npm run dev` | Press `Ctrl+C` in the frontend terminal |
+
+If the original terminals are unavailable, stop only the processes listening on the development ports:
+
+```bash
+# Stop backend on port 8080
+lsof -tiTCP:8080 -sTCP:LISTEN | while read -r pid; do kill "$pid"; done
+
+# Stop frontend on port 3000
+lsof -tiTCP:3000 -sTCP:LISTEN | while read -r pid; do kill "$pid"; done
+```
+
+Confirm that both ports are free:
+
+```bash
+lsof -nP -iTCP:8080 -sTCP:LISTEN
+lsof -nP -iTCP:3000 -sTCP:LISTEN
+```
+
+No output means the corresponding server is stopped. The `lsof` commands above are for macOS and Linux.
+
 ## Environment configuration
 
 The application has local defaults, so environment variables are optional for a first run. To customize them, copy the example file:
@@ -142,14 +170,14 @@ Build and run the backend without database variables:
 
 ```bash
 docker build -t portfolio-api .
-docker run --rm -p 8080:8080 \
+docker run --rm --name portfolio-api -p 8080:8080 \
   -e ADMIN_USERNAME=admin \
   -e ADMIN_PASSWORD='choose-a-strong-password' \
   -e JWT_SECRET='replace-with-a-long-random-secret' \
   portfolio-api
 ```
 
-The image runs as a non-root user and writes its runtime document to `/app/data/portfolio.json`. Mount `/app/data` to retain changes when recreating a local container.
+Stop the named container from another terminal with `docker stop portfolio-api`. The image runs as a non-root user and writes its runtime document to `/app/data/portfolio.json`. Mount `/app/data` to retain changes when recreating a local container.
 
 ## JSON data model
 
