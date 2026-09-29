@@ -76,6 +76,8 @@ npm run dev
 
 Open http://localhost:3000 in a browser. The Vite development server proxies `/api` requests to the backend on port `8080`.
 
+On Vercel, `frontend/vercel.json` proxies `/api/*` to the deployed Render backend at `https://portfolio-8rom.onrender.com`.
+
 ### 3. Sign in to the admin dashboard
 
 For local development, the defaults are:

@@ -16,6 +16,7 @@ The included `render.yaml` creates one free web service. Connect the repository 
 | `JWT_SECRET` | Yes | Strong JWT signing secret; Blueprint generates one |
 | `JWT_EXPIRATION` | No | Token lifetime in milliseconds; default `86400000` |
 | `CORS_ALLOWED_ORIGINS` | Yes | Comma-separated frontend origins |
+| `CORS_ALLOWED_ORIGIN_PATTERNS` | No | Additional patterns; defaults to `https://*.vercel.app` |
 
 The Docker image creates `/app/data` with write access for its non-root application user. At startup, the app copies the bundled `resume.json` seed there if `portfolio.json` does not exist.
 
@@ -35,7 +36,7 @@ Import the repository and use:
 - Output directory: `dist`
 - Environment variable: `VITE_API_BASE_URL=https://YOUR-RENDER-SERVICE.onrender.com/api`
 
-After Vercel assigns the final domain, set Render's `CORS_ALLOWED_ORIGINS` to that exact origin, without a trailing slash. Multiple origins are comma-separated.
+The included `frontend/vercel.json` proxies same-origin `/api/*` requests to `https://portfolio-8rom.onrender.com/api/*`. The backend also permits HTTPS Vercel deployment origins through `CORS_ALLOWED_ORIGIN_PATTERNS`. For a custom non-Vercel domain, add its exact origin to Render's `CORS_ALLOWED_ORIGINS`, without a trailing slash. Multiple origins are comma-separated.
 
 ## Local Docker verification
 

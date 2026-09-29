@@ -17,7 +17,9 @@ import java.nio.file.Path;
 import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -55,6 +57,16 @@ class PortfolioApiIntegrationTest {
         mockMvc.perform(get("/api/profile"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.id").value(1));
+    }
+
+    @Test
+    void vercelDeploymentOriginsPassCorsPreflight() throws Exception {
+        String origin = "https://portfolio-example-barathe-gits-projects.vercel.app";
+        mockMvc.perform(options("/api/profile")
+                        .header("Origin", origin)
+                        .header("Access-Control-Request-Method", "GET"))
+                .andExpect(status().isOk())
+                .andExpect(header().string("Access-Control-Allow-Origin", origin));
     }
 
     @Test

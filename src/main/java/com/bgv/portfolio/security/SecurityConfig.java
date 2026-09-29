@@ -35,6 +35,9 @@ public class SecurityConfig {
     
     @Value("${cors.allowed-origins:}")
     private String corsAllowedOrigins;
+
+    @Value("${cors.allowed-origin-patterns:}")
+    private String corsAllowedOriginPatterns;
     
     // Public endpoints that don't require authentication
     private static final String[] PUBLIC_GET_ENDPOINTS = {
@@ -107,6 +110,11 @@ public class SecurityConfig {
         }
         
         configuration.setAllowedOrigins(origins);
+
+        List<String> originPatterns = splitConfiguration(corsAllowedOriginPatterns);
+        if (!originPatterns.isEmpty()) {
+            configuration.setAllowedOriginPatterns(originPatterns);
+        }
         
         // Allowed HTTP methods
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
@@ -123,6 +131,16 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
+    }
+
+    private static List<String> splitConfiguration(String value) {
+        if (value == null || value.isBlank()) {
+            return List.of();
+        }
+        return Arrays.stream(value.split(","))
+                .map(String::trim)
+                .filter(item -> !item.isEmpty())
+                .toList();
     }
 
     /**
